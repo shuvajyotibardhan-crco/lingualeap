@@ -78,6 +78,9 @@ Provides `{ user, loading }` via React Context. Wraps `onAuthStateChanged` so th
 ### `src/context/ProgressContext.jsx`
 Provides `{ progress, awardXP, saveStars, saveBadge, isLevelUnlocked }` via React Context. Reads the user's Firestore document (`users/{uid}`) on mount and writes back on every XP/star/badge change. Uses Firestore's offline persistence to queue writes when offline.
 
+### `src/hooks/useLevelData.js`
+Fetches `/data/es/level_N.json` on mount (or when `level` changes). Returns `{ phrases, loading, error }`. Includes a cancellation guard so stale responses from a previous level are ignored.
+
 ### `src/hooks/useTTS.js`
 Thin React hook wrapping `lib/tts.js`. Returns `{ speak, isSpeaking }`.
 

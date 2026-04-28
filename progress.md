@@ -9,8 +9,12 @@
 3. [x] T0 COMPLETE — repo: https://github.com/shuvajyotibardhan-crco/lingualeap
 4. [x] Firebase project: lingualeap-divel | Auth: Email+Google | Firestore: production
 5. [x] All 7 GitHub Actions secrets set
-6. [x] T1.1 — AuthContext, ProtectedRoute, LoginPage, RegisterPage, App.jsx
-7. [x] T1.2 — ProgressContext, useProgress hook, ProtectedRoute updated
+6. [x] CI FIX — removed "Deploy Firestore rules" step from deploy.yml (service account lacked serviceusage.googleapis.com permission; rules managed in Firebase Console)
+7. [x] T1.1 — AuthContext, ProtectedRoute, LoginPage, RegisterPage, App.jsx
+8. [x] T1.2 — ProgressContext, useProgress hook, ProtectedRoute updated
+9. [x] T1.3 — useLevelData hook (fetch /data/es/level_N.json, cancellation guard)
+10. [x] T1.4 — src/lib/tts.js + src/hooks/useTTS.js
+11. [x] T1.5 — src/lib/asr.js + src/lib/fuzzy.js + src/hooks/useASR.js
 
 ## Current Logic Context
 - Firebase project ID: lingualeap-divel
@@ -27,7 +31,7 @@
 - [x] T1.3 — useLevelData hook
 - [x] T1.4 — TTS: src/lib/tts.js + useTTS hook
 - [x] T1.5 — ASR: src/lib/asr.js + src/lib/fuzzy.js + useASR hook
-- [ ] T1.6 — XP/stars/badge logic (done — inside ProgressContext.completeLevel)
+- [x] T1.6 — XP/stars/badge logic (done — inside ProgressContext.completeLevel)
 - [ ] T1.7 — UI components: PhraseCard, LevelCard, NounBank, RewardAnimation
 - [ ] T1.8 — LevelMap page (full)
 - [ ] T1.9 — LevelPage + mode selector

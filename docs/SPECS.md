@@ -303,6 +303,7 @@ Language Learning App/
 │   │   ├── AuthContext.jsx         # Provides { user, loading } via onAuthStateChanged
 │   │   └── ProgressContext.jsx     # Provides { progress, awardXP, saveStars, saveBadge, isLevelUnlocked }
 │   ├── hooks/
+│   │   ├── useLevelData.js         # Fetches /data/es/level_N.json — returns { phrases, loading, error }
 │   │   ├── useTTS.js               # Wraps lib/tts.js — returns { speak, isSpeaking }
 │   │   ├── useASR.js               # Wraps lib/asr.js — returns { startListening, stopListening, transcript, isListening, isSupported }
 │   │   └── useProgress.js          # Re-exports ProgressContext values
