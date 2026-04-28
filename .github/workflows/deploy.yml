@@ -37,12 +37,3 @@ jobs:
           channelId: live
           projectId: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
 
-      - name: Deploy Firestore rules
-        run: |
-          printf '%s' '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
-          npx firebase-tools@14 deploy --only firestore:rules \
-            --project ${{ secrets.VITE_FIREBASE_PROJECT_ID }} \
-            --non-interactive
-          rm -f /tmp/sa.json
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: /tmp/sa.json

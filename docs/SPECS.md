@@ -148,25 +148,28 @@ function awardXP(wasFirstAttempt):
   writeToFirestore(xp)
 ```
 
-### Badge Award
+### Level Completion (stars + unlock + badges — single atomic Firestore write)
 ```
-PHASE_BADGE_MAP = {
-  4:  "phase1",   // completing level 4 awards Phase 1 badge
-  8:  "phase2",
-  12: "phase3",
-}
-LEGEND_BADGE = "linguaLegend"  // all 12 levels complete
+PHASE_BADGE_MAP = { 4: "phase1", 8: "phase2", 12: "phase3" }
+LEGEND_BADGE    = "linguaLegend"
 
-function checkBadges(completedLevel, completedLevels, badges):
-  if PHASE_BADGE_MAP[completedLevel] exists:
-    badge = PHASE_BADGE_MAP[completedLevel]
-    if badge NOT IN badges:
-      badges.push(badge)
-  if completedLevels contains all of [1..12]:
-    if LEGEND_BADGE NOT IN badges:
-      badges.push(LEGEND_BADGE)
-      triggerLinguaLegendCelebration()
-  writeToFirestore(badges)
+function completeLevel(level, firstAttemptPasses, totalPhrases):
+  stars      = calculateStars(totalPhrases, firstAttemptPasses)
+  levelStars = { ...progress.levelStars, [level]: stars }
+
+  nextLevel      = level + 1
+  unlockedLevels = nextLevel > 12 || nextLevel already unlocked
+    ? existing list
+    : [...existing, nextLevel]
+
+  badges = [...existing badges]
+  if PHASE_BADGE_MAP[level] exists AND not already in badges:
+    badges.push(PHASE_BADGE_MAP[level])
+  if all 12 levels in levelStars AND LEGEND_BADGE not in badges:
+    badges.push(LEGEND_BADGE)
+
+  writeToFirestore({ levelStars, unlockedLevels, badges })  // single setDoc merge
+  return { stars, badges, isLinguaLegend }
 ```
 
 ### ASR Fuzzy Match (Levenshtein similarity)
@@ -262,8 +265,8 @@ All variables must be prefixed `VITE_` to be exposed to the browser by Vite. A `
 | Constant | Value | File |
 |---|---|---|
 | `PASS_THRESHOLD` | `0.60` | `fuzzy.js` |
-| `PASS_XP` | `10` | `lib/xp.js` |
-| `FIRST_ATTEMPT_BONUS_XP` | `5` | `lib/xp.js` |
+| `PASS_XP` | `10` | `context/ProgressContext.jsx` |
+| `FIRST_ATTEMPT_BONUS` | `5` | `context/ProgressContext.jsx` |
 | `DEFAULT_LANG` | `"es"` | `lib/tts.js` |
 | `TTS_LANG_HINT` | `"es-ES"` | `lib/tts.js` |
 
