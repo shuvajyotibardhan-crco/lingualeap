@@ -1,0 +1,8 @@
+[
+  { "id": "es-3-1", "spanish": "Estoy feliz", "english": "I am happy", "audioHint": "ehs-TOY feh-LEES", "category": "feeling" },
+  { "id": "es-3-2", "spanish": "Estoy triste", "english": "I am sad", "audioHint": "ehs-TOY TREES-teh", "category": "feeling" },
+  { "id": "es-3-3", "spanish": "Tengo miedo", "english": "I am scared", "audioHint": "TEN-goh mee-EH-doh", "category": "feeling" },
+  { "id": "es-3-4", "spanish": "¿Estás bien?", "english": "Are you okay?", "audioHint": "ehs-TAHS bee-EN", "category": "feeling" },
+  { "id": "es-3-5", "spanish": "Me gusta...", "english": "I like...", "audioHint": "meh GOOS-tah", "category": "feeling" },
+  { "id": "es-3-6", "spanish": "No me gusta...", "english": "I don't like...", "audioHint": "noh meh GOOS-tah", "category": "feeling" }
+]

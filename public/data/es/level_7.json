@@ -1,0 +1,12 @@
+[
+  { "id": "es-7-1", "spanish": "Rojo", "english": "Red", "audioHint": "ROH-hoh", "category": "colour" },
+  { "id": "es-7-2", "spanish": "Azul", "english": "Blue", "audioHint": "ah-SOOL", "category": "colour" },
+  { "id": "es-7-3", "spanish": "Verde", "english": "Green", "audioHint": "VEHR-deh", "category": "colour" },
+  { "id": "es-7-4", "spanish": "Amarillo", "english": "Yellow", "audioHint": "ah-mah-REE-yoh", "category": "colour" },
+  { "id": "es-7-5", "spanish": "¿Qué color es?", "english": "What color is it?", "audioHint": "keh koh-LOR ehs", "category": "colour" },
+  { "id": "es-7-6", "spanish": "Mi color favorito es...", "english": "My favorite color is...", "audioHint": "mee koh-LOR fah-voh-REE-toh ehs", "category": "colour" },
+  { "id": "es-7-7", "spanish": "Es muy grande", "english": "It's very big", "audioHint": "ehs mwee GRAN-deh", "category": "colour" },
+  { "id": "es-7-8", "spanish": "Es muy pequeño", "english": "It's very small", "audioHint": "ehs mwee peh-KEN-yoh", "category": "colour" },
+  { "id": "es-7-9", "spanish": "Me gusta tu ropa", "english": "I like your clothes", "audioHint": "meh GOOS-tah too ROH-pah", "category": "colour" },
+  { "id": "es-7-10", "spanish": "Zapatos", "english": "Shoes", "audioHint": "sah-PAH-tohs", "category": "colour" }
+]

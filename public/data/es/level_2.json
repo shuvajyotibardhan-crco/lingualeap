@@ -1,0 +1,8 @@
+[
+  { "id": "es-2-1", "spanish": "Quiero...", "english": "I want...", "audioHint": "kee-EH-roh", "category": "food" },
+  { "id": "es-2-2", "spanish": "Por favor", "english": "Please", "audioHint": "por fah-VOR", "category": "food" },
+  { "id": "es-2-3", "spanish": "Gracias", "english": "Thank you", "audioHint": "GRAH-see-ahs", "category": "food" },
+  { "id": "es-2-4", "spanish": "Tengo hambre", "english": "I am hungry", "audioHint": "TEN-goh AHM-breh", "category": "food" },
+  { "id": "es-2-5", "spanish": "La cuenta, por favor", "english": "The bill, please", "audioHint": "lah KWEN-tah por fah-VOR", "category": "food" },
+  { "id": "es-2-6", "spanish": "Está rico", "english": "It's yummy", "audioHint": "ehs-TAH REE-koh", "category": "food" }
+]

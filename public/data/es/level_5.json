@@ -1,0 +1,10 @@
+[
+  { "id": "es-5-1", "spanish": "Mi familia", "english": "My family", "audioHint": "mee fah-MEE-lee-ah", "category": "family" },
+  { "id": "es-5-2", "spanish": "Mi mamá", "english": "My mom", "audioHint": "mee mah-MAH", "category": "family" },
+  { "id": "es-5-3", "spanish": "Mi papá", "english": "My dad", "audioHint": "mee pah-PAH", "category": "family" },
+  { "id": "es-5-4", "spanish": "Mi hermano/a", "english": "My brother/sister", "audioHint": "mee ehr-MAH-noh", "category": "family" },
+  { "id": "es-5-5", "spanish": "Mi abuelo/a", "english": "My grandpa/grandma", "audioHint": "mee ah-BWEH-loh", "category": "family" },
+  { "id": "es-5-6", "spanish": "Tengo un perro", "english": "I have a dog", "audioHint": "TEN-goh oon PEH-rroh", "category": "family" },
+  { "id": "es-5-7", "spanish": "Tengo un gato", "english": "I have a cat", "audioHint": "TEN-goh oon GAH-toh", "category": "family" },
+  { "id": "es-5-8", "spanish": "Te quiero", "english": "I love you", "audioHint": "teh kee-EH-roh", "category": "family" }
+]

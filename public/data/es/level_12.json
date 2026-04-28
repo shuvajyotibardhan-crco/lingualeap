@@ -1,0 +1,12 @@
+[
+  { "id": "es-12-1", "spanish": "¡Ayuda!", "english": "Help!", "audioHint": "ah-YOO-dah", "category": "safety" },
+  { "id": "es-12-2", "spanish": "Estoy perdido/a", "english": "I am lost", "audioHint": "ehs-TOY pehr-DEE-doh", "category": "safety" },
+  { "id": "es-12-3", "spanish": "Necesito ayuda", "english": "I need help", "audioHint": "neh-seh-SEE-toh ah-YOO-dah", "category": "safety" },
+  { "id": "es-12-4", "spanish": "¿Habla inglés?", "english": "Do you speak English?", "audioHint": "AH-blah een-GLEHS", "category": "safety" },
+  { "id": "es-12-5", "spanish": "Más despacio", "english": "Slower", "audioHint": "mahs dehs-PAH-see-oh", "category": "safety" },
+  { "id": "es-12-6", "spanish": "¿Cómo se dice...?", "english": "How do you say...?", "audioHint": "KOH-moh seh DEE-seh", "category": "safety" },
+  { "id": "es-12-7", "spanish": "Llame a mi mamá/papá", "english": "Call my parents", "audioHint": "YAH-meh ah mee mah-MAH pah-PAH", "category": "safety" },
+  { "id": "es-12-8", "spanish": "Mi número es...", "english": "My number is...", "audioHint": "mee NOO-meh-roh ehs", "category": "safety" },
+  { "id": "es-12-9", "spanish": "Perdón", "english": "Excuse me / Sorry", "audioHint": "pehr-DON", "category": "safety" },
+  { "id": "es-12-10", "spanish": "Entiendo", "english": "I understand", "audioHint": "en-tee-EN-doh", "category": "safety" }
+]

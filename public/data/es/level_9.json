@@ -1,0 +1,12 @@
+[
+  { "id": "es-9-1", "spanish": "¿Cuánto cuesta?", "english": "How much?", "audioHint": "KWAN-toh KWES-tah", "category": "market" },
+  { "id": "es-9-2", "spanish": "Es caro", "english": "It's expensive", "audioHint": "ehs KAH-roh", "category": "market" },
+  { "id": "es-9-3", "spanish": "Es barato", "english": "It's cheap", "audioHint": "ehs bah-RAH-toh", "category": "market" },
+  { "id": "es-9-4", "spanish": "Quiero comprar...", "english": "I want to buy...", "audioHint": "kee-EH-roh kom-PRAR", "category": "market" },
+  { "id": "es-9-5", "spanish": "¿Aceptan tarjeta?", "english": "Do you take cards?", "audioHint": "ah-SEP-tahn tar-HEH-tah", "category": "market" },
+  { "id": "es-9-6", "spanish": "Una bolsa, por favor", "english": "A bag, please", "audioHint": "OO-nah BOL-sah por fah-VOR", "category": "market" },
+  { "id": "es-9-7", "spanish": "Cambio", "english": "Change / Money", "audioHint": "KAM-bee-oh", "category": "market" },
+  { "id": "es-9-8", "spanish": "El mercado", "english": "The market", "audioHint": "el mer-KAH-doh", "category": "market" },
+  { "id": "es-9-9", "spanish": "¿Hay...?", "english": "Is there...?", "audioHint": "AY", "category": "market" },
+  { "id": "es-9-10", "spanish": "Solo miro", "english": "Just looking", "audioHint": "SOH-loh MEE-roh", "category": "market" }
+]

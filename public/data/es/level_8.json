@@ -1,0 +1,12 @@
+[
+  { "id": "es-8-1", "spanish": "Cabeza", "english": "Head", "audioHint": "kah-BEH-sah", "category": "body" },
+  { "id": "es-8-2", "spanish": "Manos", "english": "Hands", "audioHint": "MAH-nohs", "category": "body" },
+  { "id": "es-8-3", "spanish": "Pies", "english": "Feet", "audioHint": "pee-EHS", "category": "body" },
+  { "id": "es-8-4", "spanish": "Me duele...", "english": "My ... hurts", "audioHint": "meh DWEH-leh", "category": "body" },
+  { "id": "es-8-5", "spanish": "¿Puedo ir al baño?", "english": "Can I go to the bathroom?", "audioHint": "PWEH-doh eer al BAH-nyoh", "category": "body" },
+  { "id": "es-8-6", "spanish": "Necesito un lápiz", "english": "I need a pencil", "audioHint": "neh-seh-SEE-toh oon LAH-pees", "category": "body" },
+  { "id": "es-8-7", "spanish": "Mira esto", "english": "Look at this", "audioHint": "MEE-rah EHS-toh", "category": "body" },
+  { "id": "es-8-8", "spanish": "Escucha", "english": "Listen", "audioHint": "ehs-KOO-chah", "category": "body" },
+  { "id": "es-8-9", "spanish": "No entiendo", "english": "I don't understand", "audioHint": "noh en-tee-EN-doh", "category": "body" },
+  { "id": "es-8-10", "spanish": "Repite, por favor", "english": "Repeat, please", "audioHint": "reh-PEE-teh por fah-VOR", "category": "body" }
+]

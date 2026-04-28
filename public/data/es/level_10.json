@@ -1,0 +1,12 @@
+[
+  { "id": "es-10-1", "spanish": "El autobús", "english": "The bus", "audioHint": "el ow-toh-BOOS", "category": "transport" },
+  { "id": "es-10-2", "spanish": "El tren", "english": "The train", "audioHint": "el tren", "category": "transport" },
+  { "id": "es-10-3", "spanish": "Un boleto", "english": "A ticket", "audioHint": "oon boh-LEH-toh", "category": "transport" },
+  { "id": "es-10-4", "spanish": "¿A qué hora sale?", "english": "What time does it leave?", "audioHint": "ah keh OH-rah SAH-leh", "category": "transport" },
+  { "id": "es-10-5", "spanish": "Quiero ir a...", "english": "I want to go to...", "audioHint": "kee-EH-roh eer ah", "category": "transport" },
+  { "id": "es-10-6", "spanish": "Pare aquí", "english": "Stop here", "audioHint": "PAH-reh ah-KEE", "category": "transport" },
+  { "id": "es-10-7", "spanish": "La calle...", "english": "The street...", "audioHint": "lah KAH-yeh", "category": "transport" },
+  { "id": "es-10-8", "spanish": "La estación", "english": "The station", "audioHint": "lah ehs-tah-see-ON", "category": "transport" },
+  { "id": "es-10-9", "spanish": "¿Está lejos?", "english": "Is it far?", "audioHint": "ehs-TAH LEH-hohs", "category": "transport" },
+  { "id": "es-10-10", "spanish": "¿Está cerca?", "english": "Is it near?", "audioHint": "ehs-TAH SEHR-kah", "category": "transport" }
+]

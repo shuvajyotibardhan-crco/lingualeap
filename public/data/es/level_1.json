@@ -1,0 +1,7 @@
+[
+  { "id": "es-1-1", "spanish": "¡Hola!", "english": "Hello", "audioHint": "OH-lah", "category": "greeting" },
+  { "id": "es-1-2", "spanish": "¿Cómo te llamas?", "english": "What is your name?", "audioHint": "KOH-moh teh YAH-mahs", "category": "greeting" },
+  { "id": "es-1-3", "spanish": "Me llamo...", "english": "My name is...", "audioHint": "meh YAH-moh", "category": "greeting" },
+  { "id": "es-1-4", "spanish": "Mucho gusto", "english": "Nice to meet you", "audioHint": "MOO-choh GOOS-toh", "category": "greeting" },
+  { "id": "es-1-5", "spanish": "Adiós", "english": "Goodbye", "audioHint": "ah-dee-OHS", "category": "greeting" }
+]

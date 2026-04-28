@@ -1,0 +1,8 @@
+[
+  { "id": "es-4-1", "spanish": "¿Dónde está...?", "english": "Where is...?", "audioHint": "DON-deh ehs-TAH", "category": "direction" },
+  { "id": "es-4-2", "spanish": "A la derecha", "english": "To the right", "audioHint": "ah lah deh-REH-chah", "category": "direction" },
+  { "id": "es-4-3", "spanish": "A la izquierda", "english": "To the left", "audioHint": "ah lah ees-kee-EHR-dah", "category": "direction" },
+  { "id": "es-4-4", "spanish": "Sigue recto", "english": "Go straight", "audioHint": "SEE-geh REK-toh", "category": "direction" },
+  { "id": "es-4-5", "spanish": "Está aquí", "english": "It's here", "audioHint": "ehs-TAH ah-KEE", "category": "direction" },
+  { "id": "es-4-6", "spanish": "Está allí", "english": "It's there", "audioHint": "ehs-TAH ah-YEE", "category": "direction" }
+]

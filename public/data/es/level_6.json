@@ -1,0 +1,11 @@
+[
+  { "id": "es-6-1", "spanish": "¿Quieres jugar?", "english": "Do you want to play?", "audioHint": "kee-EH-rehs hoo-GAR", "category": "play" },
+  { "id": "es-6-2", "spanish": "Es mi turno", "english": "It's my turn", "audioHint": "ehs mee TOOR-noh", "category": "play" },
+  { "id": "es-6-3", "spanish": "Es tu turno", "english": "It's your turn", "audioHint": "ehs too TOOR-noh", "category": "play" },
+  { "id": "es-6-4", "spanish": "¡Vamos!", "english": "Let's go!", "audioHint": "VAH-mohs", "category": "play" },
+  { "id": "es-6-5", "spanish": "¡Gané!", "english": "I won!", "audioHint": "gah-NEH", "category": "play" },
+  { "id": "es-6-6", "spanish": "Otra vez", "english": "Again", "audioHint": "OH-trah vehs", "category": "play" },
+  { "id": "es-6-7", "spanish": "Préstame esto", "english": "Lend me this", "audioHint": "PREHS-tah-meh EHS-toh", "category": "play" },
+  { "id": "es-6-8", "spanish": "Es divertido", "english": "It's fun", "audioHint": "ehs dee-vehr-TEE-doh", "category": "play" },
+  { "id": "es-6-9", "spanish": "No pasa nada", "english": "It's okay / No worries", "audioHint": "noh PAH-sah NAH-dah", "category": "play" }
+]

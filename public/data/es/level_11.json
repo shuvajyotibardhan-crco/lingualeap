@@ -1,0 +1,12 @@
+[
+  { "id": "es-11-1", "spanish": "¿Qué hora es?", "english": "What time is it?", "audioHint": "keh OH-rah ehs", "category": "time" },
+  { "id": "es-11-2", "spanish": "Hoy", "english": "Today", "audioHint": "oy", "category": "time" },
+  { "id": "es-11-3", "spanish": "Mañana", "english": "Tomorrow", "audioHint": "mah-NYAH-nah", "category": "time" },
+  { "id": "es-11-4", "spanish": "Ahora", "english": "Now", "audioHint": "ah-OH-rah", "category": "time" },
+  { "id": "es-11-5", "spanish": "Más tarde", "english": "Later", "audioHint": "mahs TAR-deh", "category": "time" },
+  { "id": "es-11-6", "spanish": "Pronto", "english": "Soon", "audioHint": "PRON-toh", "category": "time" },
+  { "id": "es-11-7", "spanish": "Desayuno", "english": "Breakfast", "audioHint": "deh-sah-YOO-noh", "category": "time" },
+  { "id": "es-11-8", "spanish": "Almuerzo", "english": "Lunch", "audioHint": "al-MWEHR-soh", "category": "time" },
+  { "id": "es-11-9", "spanish": "Cena", "english": "Dinner", "audioHint": "SEH-nah", "category": "time" },
+  { "id": "es-11-10", "spanish": "¿Cuándo?", "english": "When?", "audioHint": "KWAN-doh", "category": "time" }
+]
