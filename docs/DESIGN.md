@@ -134,7 +134,7 @@ Plays a CSS/Lottie animation on level completion or badge award. Auto-dismisses 
 Slide-up panel showing swappable words grouped by category (People, Places, Food, Items). Tapping a word plays its TTS.
 
 ### `.github/workflows/deploy.yml`
-GitHub Actions workflow: triggers on push to `main`, installs deps, builds with env vars from GitHub Secrets, deploys to Firebase Hosting via `FirebaseExtended/action-hosting-deploy@v0`, and deploys Firestore rules via `firebase-tools`.
+GitHub Actions workflow: triggers on push to `main`, installs deps, builds with env vars from GitHub Secrets, and deploys to Firebase Hosting via `FirebaseExtended/action-hosting-deploy@v0`. Firestore security rules are managed directly in the Firebase Console (the service account credential scoped to Hosting deploy does not carry the Service Usage permissions required for `firebase-tools` rules deployment).
 
 ---
 
