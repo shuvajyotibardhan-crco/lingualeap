@@ -1,9 +1,25 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import LevelMap from './pages/LevelMap'
+
 export default function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-yellow">
-      <h1 className="text-4xl font-display font-bold text-brand-orange">
-        🦜 LinguaLeap
-      </h1>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login"    element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <LevelMap />
+            </ProtectedRoute>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
