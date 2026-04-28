@@ -76,7 +76,7 @@ users/
 - Read and write allowed only if `request.auth.uid == resource.data.uid`
 - No other collection exists — all app state is in this single document per user
 
-**Offline persistence:** enabled via `enableIndexedDbPersistence(db)` — all Firestore reads/writes survive network loss and sync on reconnect.
+**Offline persistence:** enabled via `initializeFirestore(app, { localCache: persistentLocalCache() })` (Firebase 11 modern API) — all Firestore reads/writes survive network loss and sync on reconnect.
 
 ### LocalStorage / SessionStorage
 
@@ -222,7 +222,7 @@ function speak(text, lang):
 ```
 
 ### Offline Write Queue (Firestore)
-Firestore's built-in `enableIndexedDbPersistence` handles this automatically:
+Firestore's built-in `persistentLocalCache` (configured at init via `initializeFirestore`) handles this automatically:
 1. Write called while offline → stored in IndexedDB
 2. Firestore SDK monitors network state
 3. On reconnect → all pending writes flushed in order

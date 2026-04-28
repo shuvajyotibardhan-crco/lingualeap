@@ -35,7 +35,7 @@ LinguaLeap is a client-side-only progressive web app. There is no backend server
 │  └──────────────────────────────────────────────────────────────┘    │
 │         │                         │                                  │
 │  ┌──────▼──────┐         ┌────────▼───────┐                         │
-│  │ /public/data/  │         │  firebase.js   │                         │
+│  │ /data/es/      │         │  firebase.js   │                         │
 │  │ es/         │         │  (client SDK)  │                         │
 │  │ level_1.json│         └────────┬───────┘                         │
 │  │ level_2.json│                  │                                  │
