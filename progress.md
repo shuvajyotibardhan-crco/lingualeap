@@ -1,7 +1,7 @@
 # Project State
 - **Last Updated:** 2026-04-28
 - **Current Branch:** main
-- **Current Task:** T1.7 — UI components (PhraseCard, LevelCard, NounBank, RewardAnimation)
+- **Current Task:** T1.8 — LevelMap page (full)
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS)
@@ -15,6 +15,7 @@
 9. [x] T1.3 — useLevelData hook (fetch /data/es/level_N.json, cancellation guard)
 10. [x] T1.4 — src/lib/tts.js + src/hooks/useTTS.js
 11. [x] T1.5 — src/lib/asr.js + src/lib/fuzzy.js + src/hooks/useASR.js
+12. [x] T1.7 — PhraseCard, LevelCard, NounBank, RewardAnimation components
 
 ## Current Logic Context
 - Firebase project ID: lingualeap-divel
@@ -32,7 +33,7 @@
 - [x] T1.4 — TTS: src/lib/tts.js + useTTS hook
 - [x] T1.5 — ASR: src/lib/asr.js + src/lib/fuzzy.js + useASR hook
 - [x] T1.6 — XP/stars/badge logic (done — inside ProgressContext.completeLevel)
-- [ ] T1.7 — UI components: PhraseCard, LevelCard, NounBank, RewardAnimation
+- [x] T1.7 — UI components: PhraseCard, LevelCard, NounBank, RewardAnimation
 - [ ] T1.8 — LevelMap page (full)
 - [ ] T1.9 — LevelPage + mode selector
 - [ ] T1.10–T1.13 — Discovery, ShadowChallenge, Roleplay, QuickFire modes
@@ -40,6 +41,6 @@
 - [ ] T1.15 — Iteration 1 QA
 
 ## Next Immediate Step
-- T1.7: UI components — PhraseCard, LevelCard, NounBank, RewardAnimation
 - T1.8: Full LevelMap page (12-level grid, XP in header)
 - T1.9: LevelPage + mode selector
+- T1.10–T1.13: Discovery, ShadowChallenge, Roleplay, QuickFire modes
