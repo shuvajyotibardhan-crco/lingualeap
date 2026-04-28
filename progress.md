@@ -1,7 +1,7 @@
 # Project State
 - **Last Updated:** 2026-04-28
 - **Current Branch:** main
-- **Current Task:** T1.3 — useLevelData hook
+- **Current Task:** T1.7 — UI components (PhraseCard, LevelCard, NounBank, RewardAnimation)
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS)
@@ -24,9 +24,9 @@
 ## T1 Task Status
 - [x] T1.1 — AuthContext, ProtectedRoute, LoginPage, RegisterPage
 - [x] T1.2 — ProgressContext, useProgress hook
-- [ ] T1.3 — useLevelData hook
-- [ ] T1.4 — TTS: src/lib/tts.js + useTTS hook
-- [ ] T1.5 — ASR: src/lib/asr.js + src/lib/fuzzy.js + useASR hook
+- [x] T1.3 — useLevelData hook
+- [x] T1.4 — TTS: src/lib/tts.js + useTTS hook
+- [x] T1.5 — ASR: src/lib/asr.js + src/lib/fuzzy.js + useASR hook
 - [ ] T1.6 — XP/stars/badge logic (done — inside ProgressContext.completeLevel)
 - [ ] T1.7 — UI components: PhraseCard, LevelCard, NounBank, RewardAnimation
 - [ ] T1.8 — LevelMap page (full)
@@ -36,6 +36,6 @@
 - [ ] T1.15 — Iteration 1 QA
 
 ## Next Immediate Step
-- T1.3: useLevelData hook — fetches /data/es/level_N.json, returns { phrases, loading, error }
-- T1.4: TTS lib + hook
-- T1.5: ASR lib + fuzzy.js + hook
+- T1.7: UI components — PhraseCard, LevelCard, NounBank, RewardAnimation
+- T1.8: Full LevelMap page (12-level grid, XP in header)
+- T1.9: LevelPage + mode selector
