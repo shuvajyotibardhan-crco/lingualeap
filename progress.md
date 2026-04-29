@@ -1,7 +1,7 @@
 # Project State
-- **Last Updated:** 2026-04-28
+- **Last Updated:** 2026-04-29
 - **Current Branch:** main
-- **Current Task:** T1.8 — LevelMap page (full)
+- **Current Task:** T1.14 — PWA offline verification
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS)
@@ -16,6 +16,12 @@
 10. [x] T1.4 — src/lib/tts.js + src/hooks/useTTS.js
 11. [x] T1.5 — src/lib/asr.js + src/lib/fuzzy.js + src/hooks/useASR.js
 12. [x] T1.7 — PhraseCard, LevelCard, NounBank, RewardAnimation components
+13. [x] T1.8 — LevelMap page (full: 12-level grid by phase, XP + badges in header)
+14. [x] T1.9 — LevelPage + mode selector (route /level/:levelId)
+15. [x] T1.10 — Discovery mode
+16. [x] T1.11 — ShadowChallenge mode (TTS + ASR + fuzzy score)
+17. [x] T1.12 — Roleplay mode (prompt → speak/tap → score)
+18. [x] T1.13 — QuickFire mode (auto-TTS + 4-choice + countdown timer)
 
 ## Current Logic Context
 - Firebase project ID: lingualeap-divel
@@ -34,13 +40,12 @@
 - [x] T1.5 — ASR: src/lib/asr.js + src/lib/fuzzy.js + useASR hook
 - [x] T1.6 — XP/stars/badge logic (done — inside ProgressContext.completeLevel)
 - [x] T1.7 — UI components: PhraseCard, LevelCard, NounBank, RewardAnimation
-- [ ] T1.8 — LevelMap page (full)
-- [ ] T1.9 — LevelPage + mode selector
-- [ ] T1.10–T1.13 — Discovery, ShadowChallenge, Roleplay, QuickFire modes
+- [x] T1.8 — LevelMap page (full)
+- [x] T1.9 — LevelPage + mode selector
+- [x] T1.10–T1.13 — Discovery, ShadowChallenge, Roleplay, QuickFire modes
 - [ ] T1.14 — PWA offline verification
 - [ ] T1.15 — Iteration 1 QA
 
 ## Next Immediate Step
-- T1.8: Full LevelMap page (12-level grid, XP in header)
-- T1.9: LevelPage + mode selector
-- T1.10–T1.13: Discovery, ShadowChallenge, Roleplay, QuickFire modes
+- T1.14: PWA offline verification — confirm phrase JSON cached by service worker, test in DevTools offline mode
+- T1.15: Iteration 1 QA — smoke-test all 4 modes end-to-end, verify XP/stars/badge write to Firestore
