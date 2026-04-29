@@ -44,8 +44,7 @@ export default function ShadowChallenge({ level, phrases, onBack }) {
 
   const handleNext = useCallback(async () => {
     if (isLast) {
-      const fp = firstAttemptPasses + (result === 'pass' && isFirstAttempt ? 1 : 0)
-      const { stars, badges } = await completeLevel(level, fp, phrases.length)
+      const { stars, badges } = await completeLevel(level, firstAttemptPasses, phrases.length)
       const newBadge = badges[badges.length - 1]
       setReward({ stars, badge: newBadge })
     } else {
@@ -53,7 +52,7 @@ export default function ShadowChallenge({ level, phrases, onBack }) {
       setResult(null)
       setIsFirstAttempt(true)
     }
-  }, [isLast, firstAttemptPasses, result, isFirstAttempt, completeLevel, level, phrases.length])
+  }, [isLast, firstAttemptPasses, completeLevel, level, phrases.length])
 
   if (reward) {
     return <RewardAnimation stars={reward.stars} badge={reward.badge} onDone={onBack} />

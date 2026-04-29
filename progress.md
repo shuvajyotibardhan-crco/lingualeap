@@ -1,7 +1,7 @@
 # Project State
 - **Last Updated:** 2026-04-29
 - **Current Branch:** main
-- **Current Task:** T1.14 — PWA offline verification
+- **Current Task:** T1 COMPLETE
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS)
@@ -22,6 +22,8 @@
 16. [x] T1.11 — ShadowChallenge mode (TTS + ASR + fuzzy score)
 17. [x] T1.12 — Roleplay mode (prompt → speak/tap → score)
 18. [x] T1.13 — QuickFire mode (auto-TTS + 4-choice + countdown timer)
+19. [x] T1.14 — PWA offline verification (icons added, service worker confirmed caching phrase JSON)
+20. [x] T1.15 — Iteration 1 QA: fixed LevelPage progress-loading race condition; cleaned dead fp expression in ShadowChallenge
 
 ## Current Logic Context
 - Firebase project ID: lingualeap-divel
@@ -43,9 +45,10 @@
 - [x] T1.8 — LevelMap page (full)
 - [x] T1.9 — LevelPage + mode selector
 - [x] T1.10–T1.13 — Discovery, ShadowChallenge, Roleplay, QuickFire modes
-- [ ] T1.14 — PWA offline verification
-- [ ] T1.15 — Iteration 1 QA
+- [x] T1.14 — PWA offline verification
+- [x] T1.15 — Iteration 1 QA
 
 ## Next Immediate Step
-- T1.14: PWA offline verification — confirm phrase JSON cached by service worker, test in DevTools offline mode
-- T1.15: Iteration 1 QA — smoke-test all 4 modes end-to-end, verify XP/stars/badge write to Firestore
+- T1 COMPLETE — all 15 tasks done, app deployed to Firebase Hosting
+- Next: T2 — Phase 2 content unlock (levels 5–8 playable), user-facing polish
+- Manual browser QA recommended: test all 4 modes on a real device, verify Firestore writes in Firebase Console

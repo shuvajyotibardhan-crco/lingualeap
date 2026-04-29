@@ -19,8 +19,17 @@ export default function LevelPage() {
   const navigate     = useNavigate()
   const level        = Number(levelId)
   const { phrases, loading, error } = useLevelData(level)
-  const { isLevelUnlocked } = useProgress()
+  const { isLevelUnlocked, loading: progressLoading } = useProgress()
   const [activeMode, setActiveMode] = useState(null)
+
+  // Wait for Firestore data before checking unlock — DEFAULT_PROGRESS only has level 1
+  if (progressLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-yellow">
+        <div className="text-4xl animate-bounce">🦜</div>
+      </div>
+    )
+  }
 
   if (!isLevelUnlocked(level)) {
     navigate('/', { replace: true })
