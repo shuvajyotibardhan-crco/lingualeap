@@ -46,7 +46,7 @@ interface NounBankEntry {
   id: string;
   word: string;           // Spanish word
   english: string;
-  category: "people" | "places" | "food" | "items";
+  category: "people" | "places" | "food" | "animals" | "body" | "clothing" | "nature" | "transport" | "home" | "school" | "colours" | "time";
   audioHint: string;
 }
 ```
@@ -298,7 +298,7 @@ Language Learning App/
 │   │       ├── level_10.json       # 10 phrases — Transport
 │   │       ├── level_11.json       # 10 phrases — Schedules
 │   │       ├── level_12.json       # 10 phrases — Help & Safety
-│   │       └── noun_bank.json      # 15 Traveller's Noun Bank words (people/places/food/items)
+│   │       └── noun_bank.json      # 1,373 Traveller's Noun Bank words across 12 categories
 ├── src/
 │   ├── context/
 │   │   ├── AuthContext.jsx         # Provides { user, loading } via onAuthStateChanged

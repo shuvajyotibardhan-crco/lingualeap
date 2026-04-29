@@ -82,7 +82,7 @@ Provides `{ progress, loading, awardXP, completeLevel, isLevelUnlocked, calculat
 Fetches `/data/es/level_N.json` on mount (or when `level` changes). Returns `{ phrases, loading, error }`. Includes a cancellation guard so stale responses from a previous level are ignored.
 
 ### `src/hooks/useNounBank.js`
-Fetches `/data/es/noun_bank.json` once on mount. Returns `{ entries, loading }`. Entries are the 15 swappable words from the Traveller's Noun Bank grouped by category (people, places, food, items).
+Fetches `/data/es/noun_bank.json` once on mount. Returns `{ entries, loading }`. Entries are 1,373 swappable words from the Traveller's Noun Bank across 12 categories (people, places, food, animals, body, clothing, nature, transport, home, school, colours, time).
 
 ### `src/hooks/useTTS.js`
 Thin React hook wrapping `lib/tts.js`. Returns `{ speak, isSpeaking }`.
@@ -137,7 +137,7 @@ Reusable card showing Spanish text, English translation, and a TTS play button. 
 Plays a CSS/Lottie animation on level completion or badge award. Auto-dismisses after 2 seconds.
 
 ### `src/components/NounBank.jsx`
-Slide-up panel showing the 15 Traveller's Noun Bank words grouped by category (People, Places, Food, Items). Accessible from the mode-selector header and from within every mode via a 📚 button. Tapping a word plays its TTS.
+Slide-up panel showing 1,373 Traveller's Noun Bank words. Features a search input (filters by Spanish word or English translation) and 12 scrollable category tabs (All, People, Places, Food, Animals, Body, Clothing, Nature, Transport, Home, School, Colours, Time). Accessible from the mode-selector header and from within every mode via a 📚 button. Tapping a word plays its TTS.
 
 ### `.github/workflows/deploy.yml`
 GitHub Actions workflow: triggers on push to `main`, installs deps, builds with env vars from GitHub Secrets, and deploys to Firebase Hosting via `FirebaseExtended/action-hosting-deploy@v0`. Firestore security rules are managed directly in the Firebase Console (the service account credential scoped to Hosting deploy does not carry the Service Usage permissions required for `firebase-tools` rules deployment).

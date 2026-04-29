@@ -74,7 +74,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 1. Engine **must** load phrase data from `/data/{language}/level_{n}.json` at runtime
 2. Level N+1 **shall** be locked until the user has completed Level N
 3. Each phrase data object **must** contain the fields: `id`, `spanish`, `english`, `audioHint`, `category`
-4. The Traveller's Noun Bank **must** expose swappable words grouped by category (People, Places, Food, Items)
+4. The Traveller's Noun Bank **must** expose swappable words grouped by 12 categories: People, Places, Food, Animals, Body, Clothing, Nature, Transport, Home, School, Colours, Time
 5. Adding a new language **must** require only a new data subfolder — zero engine code changes
 
 **Test Plan:**
@@ -85,7 +85,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 2 | Complete all phrases in Level 1 | Level 2 card on the Level Map becomes unlocked/clickable |
 | 3 | Navigate directly to `/level/3` URL before completing Level 2 | Redirected to Level Map; Level 3 shown as locked |
 | 4 | Inspect a phrase object in DevTools Console | Fields: id, spanish, english, audioHint, category — all present |
-| 5 | Open Noun Bank panel | Category tiles shown; tapping any word plays its TTS |
+| 5 | Open Noun Bank panel | 12 category tabs + search box shown; tapping any word plays its TTS |
 | 6 | Add a test `fr/level_1.json` with French data | App loads French content without any engine code changes |
 
 ---
