@@ -1,28 +1,31 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useLevelData } from '../hooks/useLevelData'
+import { useNounBank } from '../hooks/useNounBank'
 import { useProgress } from '../hooks/useProgress'
+import NounBank from '../components/NounBank'
 import Discovery from '../modes/Discovery'
 import ShadowChallenge from '../modes/ShadowChallenge'
 import Roleplay from '../modes/Roleplay'
 import QuickFire from '../modes/QuickFire'
 
 const MODES = [
-  { id: 'discovery',       label: 'Discovery',        emoji: '👁️',  description: 'Explore words & phrases' },
-  { id: 'shadow',          label: 'Shadow Challenge',  emoji: '🎤',  description: 'Repeat what you hear' },
-  { id: 'roleplay',        label: 'Roleplay',          emoji: '🎭',  description: 'Act out a scene' },
-  { id: 'quickfire',       label: 'Quick Fire',        emoji: '⚡',  description: 'Pick the right image fast' },
+  { id: 'discovery', label: 'Discovery',       emoji: '👁️', description: 'Explore words & phrases' },
+  { id: 'shadow',    label: 'Shadow Challenge', emoji: '🎤', description: 'Repeat what you hear' },
+  { id: 'roleplay',  label: 'Roleplay',         emoji: '🎭', description: 'Respond to situations in Spanish' },
+  { id: 'quickfire', label: 'Quick Fire',       emoji: '⚡', description: 'Listen and match the right card' },
 ]
 
 export default function LevelPage() {
   const { levelId }  = useParams()
   const navigate     = useNavigate()
   const level        = Number(levelId)
-  const { phrases, loading, error } = useLevelData(level)
+  const { phrases, loading, error }         = useLevelData(level)
+  const { entries: nounBankEntries }        = useNounBank()
   const { isLevelUnlocked, loading: progressLoading } = useProgress()
-  const [activeMode, setActiveMode] = useState(null)
+  const [activeMode, setActiveMode]         = useState(null)
+  const [nounBankOpen, setNounBankOpen]     = useState(false)
 
-  // Wait for Firestore data before checking unlock — DEFAULT_PROGRESS only has level 1
   if (progressLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-brand-yellow">
@@ -55,10 +58,11 @@ export default function LevelPage() {
     )
   }
 
-  if (activeMode === 'discovery') return <Discovery level={level} phrases={phrases} onBack={() => setActiveMode(null)} />
-  if (activeMode === 'shadow')    return <ShadowChallenge level={level} phrases={phrases} onBack={() => setActiveMode(null)} />
-  if (activeMode === 'roleplay')  return <Roleplay level={level} phrases={phrases} onBack={() => setActiveMode(null)} />
-  if (activeMode === 'quickfire') return <QuickFire level={level} phrases={phrases} onBack={() => setActiveMode(null)} />
+  const modeProps = { level, phrases, nounBankEntries, onBack: () => setActiveMode(null) }
+  if (activeMode === 'discovery') return <Discovery {...modeProps} />
+  if (activeMode === 'shadow')    return <ShadowChallenge {...modeProps} />
+  if (activeMode === 'roleplay')  return <Roleplay {...modeProps} />
+  if (activeMode === 'quickfire') return <QuickFire {...modeProps} />
 
   return (
     <div className="min-h-screen bg-brand-yellow pb-10">
@@ -72,6 +76,12 @@ export default function LevelPage() {
         </button>
         <h1 className="text-lg font-bold text-white">Level {level}</h1>
         <span className="text-white/70 text-sm">{phrases.length} phrases</span>
+        <button
+          onClick={() => setNounBankOpen(true)}
+          className="ml-auto text-white font-bold text-sm bg-white/20 rounded-xl px-3 py-1 min-h-[36px] hover:bg-white/30 transition-colors"
+        >
+          📚 Word Bank
+        </button>
       </header>
 
       <main className="max-w-lg mx-auto px-4 pt-8 flex flex-col gap-4">
@@ -90,6 +100,8 @@ export default function LevelPage() {
           </button>
         ))}
       </main>
+
+      <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
     </div>
   )
 }

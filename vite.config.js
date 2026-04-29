@@ -24,7 +24,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
           {
-            urlPattern: /\/data\/es\/level_\d+\.json$/,
+            urlPattern: /\/data\/es\/.*\.json$/,
             handler: 'CacheFirst',
             options: { cacheName: 'lingualeap-phrase-data', expiration: { maxEntries: 20 } },
           },

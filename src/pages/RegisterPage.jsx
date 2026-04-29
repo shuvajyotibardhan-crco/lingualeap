@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
   createUserWithEmailAndPassword,
   updateProfile,
+  sendEmailVerification,
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth'
@@ -18,11 +19,12 @@ const googleProvider = new GoogleAuthProvider()
 
 export default function RegisterPage() {
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [errors, setErrors]     = useState({})
-  const [busy, setBusy]         = useState(false)
+  const [username, setUsername]       = useState('')
+  const [email, setEmail]             = useState('')
+  const [password, setPassword]       = useState('')
+  const [errors, setErrors]           = useState({})
+  const [busy, setBusy]               = useState(false)
+  const [verifyEmail, setVerifyEmail] = useState('')  // set after registration
 
   function validate() {
     const e = {}
@@ -41,7 +43,8 @@ export default function RegisterPage() {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password)
       await updateProfile(user, { displayName: username.trim() })
-      navigate('/')
+      await sendEmailVerification(user)
+      setVerifyEmail(email)
     } catch (err) {
       const msg = FIREBASE_ERRORS[err.code] ?? 'Something went wrong — please try again'
       setErrors({ form: msg })
@@ -63,6 +66,28 @@ export default function RegisterPage() {
     } finally {
       setBusy(false)
     }
+  }
+
+  if (verifyEmail) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-brand-yellow px-4">
+        <div className="w-full max-w-sm text-center">
+          <div className="text-7xl mb-4">📬</div>
+          <h1 className="text-2xl font-display font-extrabold text-brand-orange mb-2">Check your email!</h1>
+          <p className="text-gray-700 font-display mb-1">We sent a verification link to:</p>
+          <p className="font-bold text-gray-800 font-display mb-4">{verifyEmail}</p>
+          <p className="text-sm text-gray-500 font-display mb-6">
+            Click the link in the email to activate your account, then come back and sign in.
+          </p>
+          <Link
+            to="/login"
+            className="block w-full py-3 bg-brand-orange text-white font-display font-extrabold text-lg rounded-xl text-center hover:opacity-90 min-h-[44px]"
+          >
+            Go to Sign In
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (

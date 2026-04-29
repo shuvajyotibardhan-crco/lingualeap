@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useProgress } from '../hooks/useProgress'
 import { useTTS } from '../hooks/useTTS'
 import RewardAnimation from '../components/RewardAnimation'
+import NounBank from '../components/NounBank'
 
 const ROUND_TIME = 8 // seconds per phrase
 
@@ -15,7 +16,7 @@ function buildChoices(phrases, correctIndex) {
   return shuffle([correct, ...others])
 }
 
-export default function QuickFire({ level, phrases, onBack }) {
+export default function QuickFire({ level, phrases, nounBankEntries, onBack }) {
   const { awardXP, completeLevel } = useProgress()
   const { speak }                  = useTTS()
 
@@ -26,6 +27,7 @@ export default function QuickFire({ level, phrases, onBack }) {
   const [firstAttemptPasses, setFirstAttemptPasses] = useState(0)
   const [isFirstAttempt, setIsFirstAttempt] = useState(true)
   const [reward, setReward]                 = useState(null)
+  const [nounBankOpen, setNounBankOpen]     = useState(false)
 
   const phrase = phrases[index]
   const isLast = index === phrases.length - 1
@@ -81,7 +83,10 @@ export default function QuickFire({ level, phrases, onBack }) {
       <header className="bg-brand-orange px-4 py-3 flex items-center gap-3 shadow">
         <button onClick={onBack} aria-label="Back" className="text-white text-xl min-h-[44px] min-w-[44px] flex items-center justify-center">←</button>
         <h1 className="text-lg font-bold text-white">⚡ Quick Fire — Level {level}</h1>
-        <span className="ml-auto text-white/70 text-sm">{index + 1}/{phrases.length}</span>
+        <span className="text-white/70 text-sm">{index + 1}/{phrases.length}</span>
+        <button onClick={() => setNounBankOpen(true)} className="text-white font-bold text-sm bg-white/20 rounded-xl px-3 py-1 min-h-[36px] hover:bg-white/30 transition-colors">
+          📚
+        </button>
       </header>
 
       <main className="max-w-lg mx-auto px-4 pt-6 flex flex-col items-center gap-5">
@@ -93,18 +98,17 @@ export default function QuickFire({ level, phrases, onBack }) {
           />
         </div>
 
-        {/* Phrase prompt */}
+        {/* Audio prompt — no text shown, listen to find the match */}
         <div className="bg-white rounded-2xl shadow-md p-5 w-full text-center">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-2">Which image matches?</p>
-          <p className="text-3xl font-bold text-gray-800">{phrase.spanish}</p>
-          <p className="text-gray-500 text-sm mt-1">{phrase.audioHint}</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Listen, then pick the matching card!</p>
           <button
             onClick={() => speak(phrase.spanish)}
-            className="mt-3 text-2xl"
-            aria-label="Replay"
+            className="w-16 h-16 rounded-full bg-brand-yellow flex items-center justify-center text-3xl mx-auto hover:scale-105 active:scale-95 transition-transform shadow"
+            aria-label="Replay audio"
           >
             🔊
           </button>
+          <p className="text-xs text-gray-400 mt-2">Tap 🔊 to hear it again</p>
         </div>
 
         {/* Choice grid */}
@@ -147,6 +151,7 @@ export default function QuickFire({ level, phrases, onBack }) {
           </div>
         )}
       </main>
+      <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
     </div>
   )
 }

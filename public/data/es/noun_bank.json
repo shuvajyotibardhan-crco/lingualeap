@@ -1,0 +1,17 @@
+[
+  { "id": "nb-people-1", "word": "Niño",    "english": "Boy",      "category": "people", "audioHint": "NEE-nyoh" },
+  { "id": "nb-people-2", "word": "Niña",    "english": "Girl",     "category": "people", "audioHint": "NEE-nyah" },
+  { "id": "nb-places-1", "word": "Baño",    "english": "Bathroom", "category": "places", "audioHint": "BAH-nyoh" },
+  { "id": "nb-places-2", "word": "Playa",   "english": "Beach",    "category": "places", "audioHint": "PLAH-yah" },
+  { "id": "nb-places-3", "word": "Hotel",   "english": "Hotel",    "category": "places", "audioHint": "oh-TELL" },
+  { "id": "nb-places-4", "word": "Parque",  "english": "Park",     "category": "places", "audioHint": "PAR-keh" },
+  { "id": "nb-food-1",   "word": "Agua",    "english": "Water",    "category": "food",   "audioHint": "AH-gwah" },
+  { "id": "nb-food-2",   "word": "Leche",   "english": "Milk",     "category": "food",   "audioHint": "LEH-cheh" },
+  { "id": "nb-food-3",   "word": "Pan",     "english": "Bread",    "category": "food",   "audioHint": "pahn" },
+  { "id": "nb-food-4",   "word": "Fruta",   "english": "Fruit",    "category": "food",   "audioHint": "FROO-tah" },
+  { "id": "nb-food-5",   "word": "Jugo",    "english": "Juice",    "category": "food",   "audioHint": "HOO-goh" },
+  { "id": "nb-items-1",  "word": "Pelota",  "english": "Ball",     "category": "items",  "audioHint": "peh-LOH-tah" },
+  { "id": "nb-items-2",  "word": "Juguete", "english": "Toy",      "category": "items",  "audioHint": "hoo-GEH-teh" },
+  { "id": "nb-items-3",  "word": "Libro",   "english": "Book",     "category": "items",  "audioHint": "LEE-broh" },
+  { "id": "nb-items-4",  "word": "Ropa",    "english": "Clothes",  "category": "items",  "audioHint": "ROH-pah" }
+]

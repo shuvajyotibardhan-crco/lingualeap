@@ -4,17 +4,19 @@ import { useTTS } from '../hooks/useTTS'
 import { useASR } from '../hooks/useASR'
 import { scoreAttempt } from '../lib/fuzzy'
 import RewardAnimation from '../components/RewardAnimation'
+import NounBank from '../components/NounBank'
 
-export default function ShadowChallenge({ level, phrases, onBack }) {
+export default function ShadowChallenge({ level, phrases, nounBankEntries, onBack }) {
   const { awardXP, completeLevel } = useProgress()
   const { speak, isSpeaking }      = useTTS()
   const { startListening, stopListening, transcript, isListening, isSupported } = useASR()
 
   const [index, setIndex]                   = useState(0)
-  const [result, setResult]                 = useState(null) // 'pass' | 'retry' | null
+  const [result, setResult]                 = useState(null)
   const [firstAttemptPasses, setFirstAttemptPasses] = useState(0)
   const [isFirstAttempt, setIsFirstAttempt] = useState(true)
-  const [reward, setReward]                 = useState(null) // { stars, badge }
+  const [reward, setReward]                 = useState(null)
+  const [nounBankOpen, setNounBankOpen]     = useState(false)
 
   const phrase = phrases[index]
   const isLast = index === phrases.length - 1
@@ -63,7 +65,10 @@ export default function ShadowChallenge({ level, phrases, onBack }) {
       <header className="bg-brand-orange px-4 py-3 flex items-center gap-3 shadow">
         <button onClick={onBack} aria-label="Back" className="text-white text-xl min-h-[44px] min-w-[44px] flex items-center justify-center">←</button>
         <h1 className="text-lg font-bold text-white">🎤 Shadow Challenge — Level {level}</h1>
-        <span className="ml-auto text-white/70 text-sm">{index + 1}/{phrases.length}</span>
+        <span className="text-white/70 text-sm">{index + 1}/{phrases.length}</span>
+        <button onClick={() => setNounBankOpen(true)} className="text-white font-bold text-sm bg-white/20 rounded-xl px-3 py-1 min-h-[36px] hover:bg-white/30 transition-colors">
+          📚
+        </button>
       </header>
 
       <main className="max-w-lg mx-auto px-4 pt-8 flex flex-col items-center gap-6">
@@ -149,6 +154,7 @@ export default function ShadowChallenge({ level, phrases, onBack }) {
           </div>
         )}
       </main>
+      <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
     </div>
   )
 }

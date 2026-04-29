@@ -4,18 +4,20 @@ import { useTTS } from '../hooks/useTTS'
 import { useASR } from '../hooks/useASR'
 import { scoreAttempt } from '../lib/fuzzy'
 import RewardAnimation from '../components/RewardAnimation'
+import NounBank from '../components/NounBank'
 
-export default function Roleplay({ level, phrases, onBack }) {
+export default function Roleplay({ level, phrases, nounBankEntries, onBack }) {
   const { awardXP, completeLevel } = useProgress()
   const { speak, isSpeaking }      = useTTS()
   const { startListening, stopListening, transcript, isListening, isSupported } = useASR()
 
   const [index, setIndex]                   = useState(0)
-  const [stage, setStage]                   = useState('prompt') // 'prompt' | 'respond' | 'result'
+  const [stage, setStage]                   = useState('prompt')
   const [result, setResult]                 = useState(null)
   const [firstAttemptPasses, setFirstAttemptPasses] = useState(0)
   const [isFirstAttempt, setIsFirstAttempt] = useState(true)
   const [reward, setReward]                 = useState(null)
+  const [nounBankOpen, setNounBankOpen]     = useState(false)
 
   const phrase = phrases[index]
   const isLast = index === phrases.length - 1
@@ -60,14 +62,26 @@ export default function Roleplay({ level, phrases, onBack }) {
       <header className="bg-brand-orange px-4 py-3 flex items-center gap-3 shadow">
         <button onClick={onBack} aria-label="Back" className="text-white text-xl min-h-[44px] min-w-[44px] flex items-center justify-center">←</button>
         <h1 className="text-lg font-bold text-white">🎭 Roleplay — Level {level}</h1>
-        <span className="ml-auto text-white/70 text-sm">{index + 1}/{phrases.length}</span>
+        <span className="text-white/70 text-sm">{index + 1}/{phrases.length}</span>
+        <button onClick={() => setNounBankOpen(true)} className="text-white font-bold text-sm bg-white/20 rounded-xl px-3 py-1 min-h-[36px] hover:bg-white/30 transition-colors">
+          📚
+        </button>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 pt-8 flex flex-col items-center gap-6">
+      <main className="max-w-lg mx-auto px-4 pt-6 flex flex-col items-center gap-5">
+        {/* How to play banner */}
+        <div className="bg-brand-orange/10 border border-brand-orange/30 rounded-xl px-4 py-3 w-full text-center">
+          <p className="text-sm font-bold text-brand-orange">How to play 🎭</p>
+          <p className="text-xs text-gray-600 mt-1">
+            Listen to the situation in English. Then <strong>say</strong> (or tap) the correct Spanish phrase to respond!
+          </p>
+        </div>
+
+        {/* Situation card */}
         <div className="bg-white rounded-2xl shadow-md p-6 w-full text-center">
-          <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">The prompt:</p>
-          <p className="text-xl font-bold text-gray-700">"{phrase.english}"</p>
-          <p className="text-xs text-gray-400 mt-3">Say it in Spanish!</p>
+          <p className="text-xs text-gray-400 mb-1 uppercase tracking-wide">Someone says to you:</p>
+          <p className="text-2xl font-bold text-gray-800">"{phrase.english}"</p>
+          <p className="text-xs text-brand-orange font-semibold mt-3">👉 Respond in Spanish!</p>
         </div>
 
         {stage === 'prompt' && (
@@ -76,7 +90,7 @@ export default function Roleplay({ level, phrases, onBack }) {
             disabled={isSpeaking}
             className="bg-brand-orange text-white font-bold rounded-2xl px-8 py-3 min-h-[44px] hover:opacity-90 disabled:opacity-50 transition-opacity"
           >
-            🔊 Hear the prompt
+            🔊 Hear it in English first
           </button>
         )}
 
@@ -147,6 +161,7 @@ export default function Roleplay({ level, phrases, onBack }) {
           </div>
         )}
       </main>
+      <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
     </div>
   )
 }
