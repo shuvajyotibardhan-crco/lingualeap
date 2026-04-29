@@ -301,7 +301,7 @@ Language Learning App/
 ├── src/
 │   ├── context/
 │   │   ├── AuthContext.jsx         # Provides { user, loading } via onAuthStateChanged
-│   │   └── ProgressContext.jsx     # Provides { progress, awardXP, saveStars, saveBadge, isLevelUnlocked }
+│   │   └── ProgressContext.jsx     # Provides { progress, loading, awardXP, completeLevel, isLevelUnlocked, calculateStars }
 │   ├── hooks/
 │   │   ├── useLevelData.js         # Fetches /data/es/level_N.json — returns { phrases, loading, error }
 │   │   ├── useTTS.js               # Wraps lib/tts.js — returns { speak, isSpeaking }

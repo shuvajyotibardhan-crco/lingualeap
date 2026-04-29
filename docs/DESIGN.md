@@ -76,7 +76,7 @@ Exports `similarity(a, b): number` — computes normalised Levenshtein similarit
 Provides `{ user, loading }` via React Context. Wraps `onAuthStateChanged` so the whole app reacts to login/logout. All protected routes check `user` from this context.
 
 ### `src/context/ProgressContext.jsx`
-Provides `{ progress, awardXP, saveStars, saveBadge, isLevelUnlocked }` via React Context. Reads the user's Firestore document (`users/{uid}`) on mount and writes back on every XP/star/badge change. Uses Firestore's offline persistence to queue writes when offline.
+Provides `{ progress, loading, awardXP, completeLevel, isLevelUnlocked, calculateStars }` via React Context. Reads the user's Firestore document (`users/{uid}`) on mount and writes back on every XP/star/badge change via a single atomic `setDoc` merge. Uses Firestore's offline persistence to queue writes when offline.
 
 ### `src/hooks/useLevelData.js`
 Fetches `/data/es/level_N.json` on mount (or when `level` changes). Returns `{ phrases, loading, error }`. Includes a cancellation guard so stale responses from a previous level are ignored.
@@ -109,7 +109,7 @@ Adding a new language = adding `/public/data/{lang}/` with equivalent files. No 
 Renders the 12-level grid. Reads unlock state from ProgressContext. Locked levels show a padlock icon and are not clickable. XP total shown in the header at all times.
 
 ### `src/pages/LevelPage.jsx`
-Entry point for a level. Loads the level's JSON file, then renders a mode-selector UI (Discovery / Shadow Challenge / Roleplay / Quick-Fire). Routes to the appropriate mode component.
+Entry point for a level. Waits for ProgressContext to finish loading before checking `isLevelUnlocked` (guards against redirect race on direct URL navigation). Fetches the level's phrase JSON, then renders a mode-selector UI. Routes to the chosen mode component.
 
 ### `src/modes/Discovery.jsx`
 Displays an illustrated scene. Each tappable object calls `speak(spanishWord)`. No scoring — purely exploratory.
