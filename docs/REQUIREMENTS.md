@@ -40,8 +40,8 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 1. User **must** be able to register with a unique username, valid email address, and password (minimum 8 characters)
 2. User **must** be able to sign in using Google OAuth ("Continue with Google")
 3. User **must** receive a password reset email originating from `app_admin@divel.me` within 2 minutes of requesting one
-4. After email/password registration, a verification email **must** be sent to the registered address before the user can access the app
-5. A user who has not verified their email **must** see a "Verify your email" screen with a resend option instead of the Level Map
+4. After email/password registration, a verification email **must** be sent to the registered address
+5. A user who has not verified their email **shall** see a dismissable verification banner at the top of the app with a resend option; access to the Level Map **must not** be blocked
 6. Google OAuth users **must** be granted access immediately (Google verifies the email automatically)
 7. App **shall** persist the authenticated session across browser refreshes and tab closes
 8. An invalid email format **shall** display an inline error: "Please enter a valid email"
@@ -55,8 +55,8 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 |---|---|---|
 | 1 | Open app → click "Sign Up" → enter username, valid email, password → submit | "Check your email" screen shown; verification email arrives from Firebase |
 | 2 | Click link in verification email → return to app and sign in | Level Map shown; access granted |
-| 3 | Sign in with email/password before verifying email | "Verify your email" screen shown with resend button; Level Map not accessible |
-| 4 | Tap "Resend verification email" on verify screen | New verification email arrives; button shows "✅ Email sent!" |
+| 3 | Sign in with email/password before verifying email | Orange verification banner shown at top of screen; Level Map still accessible |
+| 4 | Tap "Resend" in the verification banner | New verification email sent; button shows "✅ Sent" |
 | 5 | Click "Sign Up" → click "Continue with Google" → complete Google OAuth flow | Account created via Google; Level Map shown immediately (no email verification step) |
 | 6 | Sign out → click "Forgot Password" → enter registered email → submit | Email received from app_admin@divel.me containing a password reset link |
 | 7 | Register with "notanemail" as the email field | Inline error: "Please enter a valid email" |

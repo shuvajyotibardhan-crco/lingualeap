@@ -319,7 +319,7 @@ Language Learning App/
 │   │   ├── PhraseCard.jsx          # Spanish text + English + TTS button
 │   │   ├── RewardAnimation.jsx     # Celebration overlay; auto-dismisses after 2s
 │   │   ├── NounBank.jsx            # Slide-up swappable word panel, grouped by category
-│   │   ├── ProtectedRoute.jsx      # Redirects to /login if no auth; blocks unverified email/password users with verify screen
+│   │   ├── ProtectedRoute.jsx      # Redirects to /login if no auth; shows dismissable verification banner for unverified email/password users
 │   │   └── LevelCard.jsx           # Level tile on the map; locked/unlocked/completed states
 │   ├── modes/
 │   │   ├── Discovery.jsx           # Tap objects → TTS; no scoring

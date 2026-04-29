@@ -73,7 +73,7 @@ Wraps `window.SpeechRecognition` (or `webkitSpeechRecognition`). Exports `startL
 Exports `similarity(a, b): number` — computes normalised Levenshtein similarity between two strings (both lowercased, diacritics stripped). Returns a value from 0.0 to 1.0. Used by Shadow Challenge to determine pass (≥0.6) or retry (<0.6).
 
 ### `src/context/AuthContext.jsx`
-Provides `{ user, loading }` via React Context. Wraps `onAuthStateChanged` so the whole app reacts to login/logout. All protected routes check `user` from this context. `user.emailVerified` is used by ProtectedRoute to gate email/password accounts until they verify.
+Provides `{ user, loading }` via React Context. Wraps `onAuthStateChanged` so the whole app reacts to login/logout. All protected routes check `user` from this context. `user.emailVerified` is used by ProtectedRoute to show a dismissable verification banner for unverified email/password accounts (access is not blocked — banner can be dismissed).
 
 ### `src/context/ProgressContext.jsx`
 Provides `{ progress, loading, awardXP, completeLevel, isLevelUnlocked, calculateStars }` via React Context. Reads the user's Firestore document (`users/{uid}`) on mount and writes back on every XP/star/badge change via a single atomic `setDoc` merge. Uses Firestore's offline persistence to queue writes when offline.
