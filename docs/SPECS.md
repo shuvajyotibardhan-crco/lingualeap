@@ -297,13 +297,15 @@ Language Learning App/
 │   │       ├── level_9.json        # 10 phrases — Marketplace
 │   │       ├── level_10.json       # 10 phrases — Transport
 │   │       ├── level_11.json       # 10 phrases — Schedules
-│   │       └── level_12.json       # 10 phrases — Help & Safety
+│   │       ├── level_12.json       # 10 phrases — Help & Safety
+│   │       └── noun_bank.json      # 15 Traveller's Noun Bank words (people/places/food/items)
 ├── src/
 │   ├── context/
 │   │   ├── AuthContext.jsx         # Provides { user, loading } via onAuthStateChanged
 │   │   └── ProgressContext.jsx     # Provides { progress, loading, awardXP, completeLevel, isLevelUnlocked, calculateStars }
 │   ├── hooks/
 │   │   ├── useLevelData.js         # Fetches /data/es/level_N.json — returns { phrases, loading, error }
+│   │   ├── useNounBank.js          # Fetches /data/es/noun_bank.json once — returns { entries, loading }
 │   │   ├── useTTS.js               # Wraps lib/tts.js — returns { speak, isSpeaking }
 │   │   ├── useASR.js               # Wraps lib/asr.js — returns { startListening, stopListening, transcript, isListening, isSupported }
 │   │   └── useProgress.js          # Re-exports ProgressContext values
@@ -317,13 +319,13 @@ Language Learning App/
 │   │   ├── PhraseCard.jsx          # Spanish text + English + TTS button
 │   │   ├── RewardAnimation.jsx     # Celebration overlay; auto-dismisses after 2s
 │   │   ├── NounBank.jsx            # Slide-up swappable word panel, grouped by category
-│   │   ├── ProtectedRoute.jsx      # Redirects to /login if no auth user
+│   │   ├── ProtectedRoute.jsx      # Redirects to /login if no auth; blocks unverified email/password users with verify screen
 │   │   └── LevelCard.jsx           # Level tile on the map; locked/unlocked/completed states
 │   ├── modes/
 │   │   ├── Discovery.jsx           # Tap objects → TTS; no scoring
 │   │   ├── ShadowChallenge.jsx     # TTS → mic → fuzzy score → pass/retry
 │   │   ├── Roleplay.jsx            # Dialogue scenario; tap/speak correct phrase to advance
-│   │   └── QuickFire.jsx           # Auto TTS → pick correct image → countdown timer
+│   │   └── QuickFire.jsx           # Auto TTS (audio-only prompt, no Spanish shown) → pick matching card → countdown timer
 │   ├── pages/
 │   │   ├── LoginPage.jsx           # Email sign-in + Google OAuth button
 │   │   ├── RegisterPage.jsx        # Username + email + password form

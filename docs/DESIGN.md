@@ -73,13 +73,16 @@ Wraps `window.SpeechRecognition` (or `webkitSpeechRecognition`). Exports `startL
 Exports `similarity(a, b): number` — computes normalised Levenshtein similarity between two strings (both lowercased, diacritics stripped). Returns a value from 0.0 to 1.0. Used by Shadow Challenge to determine pass (≥0.6) or retry (<0.6).
 
 ### `src/context/AuthContext.jsx`
-Provides `{ user, loading }` via React Context. Wraps `onAuthStateChanged` so the whole app reacts to login/logout. All protected routes check `user` from this context.
+Provides `{ user, loading }` via React Context. Wraps `onAuthStateChanged` so the whole app reacts to login/logout. All protected routes check `user` from this context. `user.emailVerified` is used by ProtectedRoute to gate email/password accounts until they verify.
 
 ### `src/context/ProgressContext.jsx`
 Provides `{ progress, loading, awardXP, completeLevel, isLevelUnlocked, calculateStars }` via React Context. Reads the user's Firestore document (`users/{uid}`) on mount and writes back on every XP/star/badge change via a single atomic `setDoc` merge. Uses Firestore's offline persistence to queue writes when offline.
 
 ### `src/hooks/useLevelData.js`
 Fetches `/data/es/level_N.json` on mount (or when `level` changes). Returns `{ phrases, loading, error }`. Includes a cancellation guard so stale responses from a previous level are ignored.
+
+### `src/hooks/useNounBank.js`
+Fetches `/data/es/noun_bank.json` once on mount. Returns `{ entries, loading }`. Entries are the 15 swappable words from the Traveller's Noun Bank grouped by category (people, places, food, items).
 
 ### `src/hooks/useTTS.js`
 Thin React hook wrapping `lib/tts.js`. Returns `{ speak, isSpeaking }`.
@@ -109,7 +112,7 @@ Adding a new language = adding `/public/data/{lang}/` with equivalent files. No 
 Renders the 12-level grid. Reads unlock state from ProgressContext. Locked levels show a padlock icon and are not clickable. XP total shown in the header at all times.
 
 ### `src/pages/LevelPage.jsx`
-Entry point for a level. Waits for ProgressContext to finish loading before checking `isLevelUnlocked` (guards against redirect race on direct URL navigation). Fetches the level's phrase JSON, then renders a mode-selector UI. Routes to the chosen mode component.
+Entry point for a level. Waits for ProgressContext to finish loading before checking `isLevelUnlocked` (guards against redirect race on direct URL navigation). Fetches the level's phrase JSON and noun bank data, then renders a mode-selector UI with a 📚 Word Bank button. Passes `nounBankEntries` to all mode components.
 
 ### `src/modes/Discovery.jsx`
 Displays an illustrated scene. Each tappable object calls `speak(spanishWord)`. No scoring — purely exploratory.
@@ -122,10 +125,10 @@ Displays an illustrated scene. Each tappable object calls `speak(spanishWord)`. 
 5. Falls back to tap-to-select when ASR unavailable.
 
 ### `src/modes/Roleplay.jsx`
-Presents a dialogue scenario with a goal. Accepts the user tapping (or speaking) the correct phrase to advance. Completes with a reward animation. XP awarded per step.
+Shows a "How to play" banner explaining the listen-then-respond mechanic. Presents an English situation prompt ("Someone says to you: …"). User responds by speaking (ASR) or tapping the correct Spanish phrase. Completes with a reward animation. XP awarded per phrase.
 
 ### `src/modes/QuickFire.jsx`
-Auto-plays phrase TTS. Shows 4 image options with a countdown timer. Correct tap → XP + next phrase. Wrong tap or timeout → "Try again!" + replay audio.
+Audio-only challenge — Spanish word is NOT shown in the prompt, preventing trivial text-matching. Auto-plays phrase TTS on each round. Shows 4 Spanish word cards with a countdown timer. Correct tap → XP + next phrase. Wrong tap or timeout → "Try again!" + replay audio.
 
 ### `src/components/PhraseCard.jsx`
 Reusable card showing Spanish text, English translation, and a TTS play button. Used across all modes.
@@ -134,7 +137,7 @@ Reusable card showing Spanish text, English translation, and a TTS play button. 
 Plays a CSS/Lottie animation on level completion or badge award. Auto-dismisses after 2 seconds.
 
 ### `src/components/NounBank.jsx`
-Slide-up panel showing swappable words grouped by category (People, Places, Food, Items). Tapping a word plays its TTS.
+Slide-up panel showing the 15 Traveller's Noun Bank words grouped by category (People, Places, Food, Items). Accessible from the mode-selector header and from within every mode via a 📚 button. Tapping a word plays its TTS.
 
 ### `.github/workflows/deploy.yml`
 GitHub Actions workflow: triggers on push to `main`, installs deps, builds with env vars from GitHub Secrets, and deploys to Firebase Hosting via `FirebaseExtended/action-hosting-deploy@v0`. Firestore security rules are managed directly in the Firebase Console (the service account credential scoped to Hosting deploy does not carry the Service Usage permissions required for `firebase-tools` rules deployment).

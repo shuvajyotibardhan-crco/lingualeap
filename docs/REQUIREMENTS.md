@@ -40,24 +40,29 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 1. User **must** be able to register with a unique username, valid email address, and password (minimum 8 characters)
 2. User **must** be able to sign in using Google OAuth ("Continue with Google")
 3. User **must** receive a password reset email originating from `app_admin@divel.me` within 2 minutes of requesting one
-4. App **shall** persist the authenticated session across browser refreshes and tab closes
-5. An invalid email format **shall** display an inline error: "Please enter a valid email"
-6. A password under 8 characters **shall** display an inline error: "Password must be at least 8 characters"
-7. Registering with an already-used email **shall** display: "An account with this email already exists"
-8. Apple Sign-In **must not** be implemented (violates zero-cost constraint)
+4. After email/password registration, a verification email **must** be sent to the registered address before the user can access the app
+5. A user who has not verified their email **must** see a "Verify your email" screen with a resend option instead of the Level Map
+6. Google OAuth users **must** be granted access immediately (Google verifies the email automatically)
+7. App **shall** persist the authenticated session across browser refreshes and tab closes
+8. An invalid email format **shall** display an inline error: "Please enter a valid email"
+9. A password under 8 characters **shall** display an inline error: "Password must be at least 8 characters"
+10. Registering with an already-used email **shall** display: "An account with this email already exists"
+11. Apple Sign-In **must not** be implemented (violates zero-cost constraint)
 
 **Test Plan:**
 
 | # | Step | Expected Result |
 |---|---|---|
-| 1 | Open app → click "Sign Up" → enter username, valid email, password → submit | Account created; redirected to Level Map |
-| 2 | Sign out → sign in with same credentials | Successfully signed in; Level Map shown |
-| 3 | Click "Sign Up" → click "Continue with Google" → complete Google OAuth flow | Account created via Google; redirected to Level Map |
-| 4 | Sign out → click "Forgot Password" → enter registered email → submit | Email received from app_admin@divel.me containing a password reset link |
-| 5 | Register with "notanemail" as the email field | Inline error: "Please enter a valid email" |
-| 6 | Register with a 6-character password | Inline error: "Password must be at least 8 characters" |
-| 7 | Register with an email already registered | Inline error: "An account with this email already exists" |
-| 8 | Sign in → close browser tab → reopen app URL | Still signed in; Level Map shown without re-login prompt |
+| 1 | Open app → click "Sign Up" → enter username, valid email, password → submit | "Check your email" screen shown; verification email arrives from Firebase |
+| 2 | Click link in verification email → return to app and sign in | Level Map shown; access granted |
+| 3 | Sign in with email/password before verifying email | "Verify your email" screen shown with resend button; Level Map not accessible |
+| 4 | Tap "Resend verification email" on verify screen | New verification email arrives; button shows "✅ Email sent!" |
+| 5 | Click "Sign Up" → click "Continue with Google" → complete Google OAuth flow | Account created via Google; Level Map shown immediately (no email verification step) |
+| 6 | Sign out → click "Forgot Password" → enter registered email → submit | Email received from app_admin@divel.me containing a password reset link |
+| 7 | Register with "notanemail" as the email field | Inline error: "Please enter a valid email" |
+| 8 | Register with a 6-character password | Inline error: "Password must be at least 8 characters" |
+| 9 | Register with an email already registered | Inline error: "An account with this email already exists" |
+| 10 | Sign in → close browser tab → reopen app URL | Still signed in; Level Map shown without re-login prompt |
 
 ---
 
@@ -145,8 +150,8 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 **Acceptance Criteria:**
 1. **Discovery mode:** Tapping an object icon **must** play its Spanish name via TTS
 2. **Shadow Challenge mode:** App **must** play the phrase, open the microphone, then show pass/retry based on ≥60% speech match
-3. **Roleplay mode:** A scenario **must** present a clear goal, accept the correct phrase as a response, and complete with a reward animation
-4. **Quick-Fire mode:** Audio **must** play automatically; user **must** select the correct image from 4 options within a countdown timer
+3. **Roleplay mode:** A "How to play" banner **must** be shown; an English situation prompt **must** be presented; the user **must** respond by speaking or tapping the correct Spanish phrase; the round **shall** complete with a reward animation
+4. **Quick-Fire mode:** Audio **must** play automatically; the Spanish word **must not** be shown in the prompt (audio-only to prevent trivial text-matching); the user **must** select the matching card from 4 options within a countdown timer
 5. All four modes **shall** be accessible from within each level
 6. Incorrect answers in all modes **must** display encouraging language only (never "wrong" or "incorrect")
 
@@ -159,9 +164,9 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 3 | Shadow Challenge → speak gibberish | "Try again!" prompt shown; no "wrong" language |
 | 4 | Enter Level 2 → select Roleplay "Order at the café" | Goal shown on screen; tapping correct phrase advances the scenario |
 | 5 | Roleplay → complete all dialogue steps | Reward animation plays; XP added |
-| 6 | Enter Level 1 → select Quick-Fire → audio plays | Four image options shown; correct image selectable |
+| 6 | Enter Level 1 → select Quick-Fire → audio plays | Four Spanish word cards shown; no Spanish text in the prompt area |
 | 7 | Quick-Fire → let countdown expire | Encouragement shown; phrase audio replays automatically |
-| 8 | Quick-Fire → select wrong image | "Try again!" shown; correct image briefly highlighted |
+| 8 | Quick-Fire → select wrong card | "Try again!" shown; correct card briefly highlighted |
 
 ---
 
@@ -351,7 +356,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 1 | Complete Level 4 → return to Level Map | Level 5 unlocked; Levels 6–8 still locked |
 | 2 | Enter Level 5 → cycle all 8 phrases | Correct Spanish/English for all family phrases shown |
 | 3 | Shadow Challenge on Level 6 phrase "¡Vamos!" | TTS plays; mic captures; fuzzy match scores correctly |
-| 4 | Quick-Fire on Level 7 (colours) | Colour images shown; audio plays the colour name |
+| 4 | Quick-Fire on Level 7 (colours) | Four colour word cards shown; audio plays the colour name; no Spanish text in prompt |
 | 5 | Complete Level 8 | Phase 2 "Connection" badge awarded; animation plays |
 | 6 | Regression: re-enter Level 1 | Phase 1 content and star ratings unaffected |
 
@@ -422,7 +427,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 1 | Complete Level 8 → return to Level Map | Level 9 unlocked; Levels 10–12 still locked |
 | 2 | Enter Level 9 → spot-check phrase #61 "¿Cuánto cuesta?" | Correct Spanish and English shown; TTS plays correctly |
 | 3 | Roleplay Level 10 "Buy a bus ticket" | Scenario completes on correct phrase spoken or tapped |
-| 4 | Quick-Fire Level 11 (time words) | Time-related images shown; audio matches phrase |
+| 4 | Quick-Fire Level 11 (time words) | Four time-word cards shown; audio matches phrase; no Spanish text in prompt |
 | 5 | Complete Level 12 | Phase 3 "Explorer" badge awarded |
 | 6 | After Level 12 completion | "Lingua Legend" full-completion celebration triggers |
 | 7 | Regression: Levels 1–8 star ratings and badges intact | No regressions introduced by Phase 3 data addition |
