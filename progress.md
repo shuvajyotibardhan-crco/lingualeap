@@ -59,9 +59,34 @@
 ### Auto-deployed on push (no longer manual):
 - ~~T2.7~~ — contactMessages Firestore rule is now in firestore.rules and deployed via CI
 
-## Next Immediate Step
-1. User upgrades Firebase project to Blaze plan (T2.1)
-2. User provides Brevo SMTP credentials + admin UID → Claude sets 5 GitHub Secrets
-3. User runs setAdminClaim.js with service account JSON (T2.39)
-4. Push to main → GitHub Actions deploys hosting + functions + firestore:rules
-5. After deploy: run T2.41 QA (all 34 Verification Plan test cases)
+## Next Immediate Step — Resume Instructions
+
+When you return, do these steps in order:
+
+### Step 1 — Firebase Blaze upgrade (you, in browser)
+Firebase Console → https://console.firebase.google.com → project lingualeap-divel → Spark plan badge → Upgrade → Blaze (pay-as-you-go). Cloud Functions cannot deploy on Spark.
+
+### Step 2 — Set 5 GitHub Secrets (you provide values, Claude sets them)
+Tell Claude: "I'm back — here are the secrets" and provide:
+- **SMTP_HOST** — Brevo SMTP host (usually `smtp-relay.brevo.com`)
+- **SMTP_PORT** — Brevo SMTP port (usually `587`)
+- **SMTP_USER** — your Brevo login email
+- **SMTP_PASS** — your Brevo SMTP key (from Brevo → SMTP & API → SMTP → Generate SMTP Key)
+- **ADMIN_UID** — Firebase UID of app_admin@divel.me (Firebase Console → Authentication → find user → copy UID)
+
+Claude will run: `gh secret set <NAME> --body "<VALUE>" --repo shuvajyotibardhan-crco/lingualeap` for each.
+
+### Step 3 — Set admin custom claim (you, in terminal)
+You need the service account JSON (same value as the FIREBASE_SERVICE_ACCOUNT GitHub Secret — download from Firebase Console → Project Settings → Service Accounts → Generate new private key, save as e.g. `/tmp/sa.json`).
+
+Then run:
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json node scripts/setAdminClaim.js <ADMIN_UID>
+```
+Expected output: `✅ Admin claim set for uid: <uid>`
+
+### Step 4 — Deploy (Claude does this)
+Claude will push to main → GitHub Actions builds + deploys hosting + functions + firestore:rules automatically.
+
+### Step 5 — QA
+Run T2.41 verification plan (34 test cases in PLAN.md).
