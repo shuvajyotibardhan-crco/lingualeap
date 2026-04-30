@@ -295,7 +295,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 
 ## Feature 10: Phase 3 Content — Connection (Levels 5–8, Phrases 24–60)
 
-*Added after Iteration 1 is tested and approved. Data-only addition — no engine changes.*
+*Added after Iteration 2 is tested and approved. Data-only addition — no engine changes.*
 
 **User Story:** As a child, I want to learn Spanish phrases about my family, games, colours, and school so that I can connect with other kids when I travel.
 
@@ -362,7 +362,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 
 ## Feature 11: Phase 4 Content — Explorer (Levels 9–12, Phrases 61–100)
 
-*Added after Iteration 2 is tested and approved. Data-only addition — no engine changes.*
+*Added after Iteration 3 is tested and approved. Data-only addition — no engine changes.*
 
 **User Story:** As a child, I want to learn Spanish phrases for shopping, transport, time, and staying safe so that I can navigate the world confidently when I travel.
 

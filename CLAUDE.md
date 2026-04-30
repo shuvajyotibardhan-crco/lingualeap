@@ -29,7 +29,7 @@ https://github.com/shuvajyotibardhan-crco/lingualeap
 ## Key Constants
 - PASS_XP = 10, FIRST_ATTEMPT_BONUS = 5, PASS_THRESHOLD = 0.60
 - Stars: 3 = 100% first-try, 2 = ≥60% first-try, 1 = otherwise
-- Phase badges: phase1 (L4), phase2 (L8), phase3 (L12), linguaLegend (all 12)
+- Phase badges: phase1 (L4), phase3 (L8), phase4 (L12), linguaLegend (all 12)
 
 ## Deployment
 - NEVER run `firebase deploy` manually — it does not work on this machine

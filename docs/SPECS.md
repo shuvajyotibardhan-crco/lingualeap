@@ -35,7 +35,7 @@ interface UserProgress {
   email: string;                      // Login email — written at registration and on Google OAuth login
   xp: number;                         // Cumulative XP total
   levelStars: Record<string, number>; // { "1": 3, "2": 2, ... } — 0 = not done
-  badges: string[];                   // e.g. ["phase1", "phase2", "linguaLegend"]
+  badges: string[];                   // e.g. ["phase1", "phase3", "linguaLegend"]
   unlockedLevels: number[];           // Levels the user has access to, always includes 1
   lastUpdated: Timestamp;
   // Account-management fields (optional — only present when relevant)
@@ -296,7 +296,7 @@ function awardXP(wasFirstAttempt):
 
 ### Level Completion (stars + unlock + badges — single atomic Firestore write)
 ```
-PHASE_BADGE_MAP = { 4: "phase1", 8: "phase2", 12: "phase3" }
+PHASE_BADGE_MAP = { 4: "phase1", 8: "phase3", 12: "phase4" }
 LEGEND_BADGE    = "linguaLegend"
 
 function completeLevel(level, firstAttemptPasses, totalPhrases):
