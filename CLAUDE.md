@@ -54,6 +54,9 @@ See `/Users/shuvajyotibardhan/Projects/.claude_rules.md` for full rules. Summary
 - Seek approval before pushing each doc stage to git
 - Stale docs are a bug — never commit code without updating affected docs
 
+### Deployment Verification — MANDATORY
+After every `git push`, watch the GitHub Actions run to completion (`gh run watch <id> --exit-status`). If it fails, diagnose, fix, push, and watch again. **Never start the next task until the run passes.**
+
 ### AC Language Rule — MANDATORY
 **Every Acceptance Criterion must use "shall" (expected behaviour) or "must" (mandatory constraint) only.**
 No other modal verbs ("should", "will", "can", "needs to") are permitted in any AC, in any feature, ever.
