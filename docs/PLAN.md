@@ -23,7 +23,7 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 
 ## Stage 1 — Proposed Feature Set
 
-> **Delivery strategy:** Build the complete app (all 9 core features) using Phase 1 content (Levels 1–4). Test and sign off on the full experience. Then add Phase 2 content, test, then Phase 3 content, test. Phases 2 & 3 are purely data additions — no new engine work needed.
+> **Delivery strategy:** Build the complete app (all 9 core features) using Phase 1 content (Levels 1–4). Test and sign off on the full experience. Then implement admin/contact/settings (Iteration 2). Then add Phase 3 content, test, then Phase 4 content, test. Phases 3 & 4 are purely data additions — no new engine work needed.
 
 ---
 
@@ -285,11 +285,31 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 
 ---
 
-### ── ITERATION 2: Phase 2 Content (after Iteration 1 tested & approved) ──
+### ── ITERATION 2: Admin Dashboard + Contact Admin + User Self-Service Settings ──
+
+> **Status:** Ready to implement — Iteration 1 app is live and approved.
+> Full task list: `docs/TASKS.md` — T5.1 through T5.41.
+
+**Features added:**
+- **Feature 12 — Contact Admin:** floating FAB on all logged-in screens; "Contact Admin" link on login page; CF-0 (handles pre-login and post-login submissions); CF-1 (emails admin on new message)
+- **Feature 13 — Admin Dashboard:** `/admin` route (admin custom claim guard); Users tab (list all users, filter, expand progress); Messages tab (view open/resolved, reply → real email); Settings tab — admin-initiated password reset, username update, email change
+- **Feature 14 — User Self-Service Settings:** `/settings` route (gear icon in LevelMap); self-service password reset (temp password emailed, force-change overlay on next login); self-service username change (email verification → `/verify-username-change`); self-service email change (old-email verification → `/verify-email-change`)
+
+**New Cloud Functions (Node 20, Brevo SMTP):**
+- CF-0 `submitContactMessage`, CF-1 `onContactCreated`, CF-2 `adminReplyToContact`
+- CF-3 `resetPassword` (admin or self), CF-4 `adminUpdateUsername`
+- CF-5 `initiateEmailChange` (admin or self), CF-6 `verifyEmailChange`
+- CF-7 `initiateUsernameChange` (self), CF-8 `verifyUsernameChange`
+
+**Architecture changes:** Firebase Blaze plan required; Nodemailer + Brevo SMTP (300/day free); SMTP credentials stored as Firebase Function Secrets; admin UID in Function env config; admin custom claim on `app_admin@divel.me` account.
 
 ---
 
-### Feature 10: Phase 2 Content — Connection (Levels 5–8, Phrases 24–60)
+### ── ITERATION 3: Phase 3 Content (after Iteration 2 tested & approved) ──
+
+---
+
+### Feature 10: Phase 3 Content — Connection (Levels 5–8, Phrases 24–60)
 
 **Description:** 37 phrases across 4 new themed levels. Data-only addition; no engine changes.
 
@@ -297,7 +317,7 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 1. All 37 phrases must be correctly mapped (Spanish ↔ English)
 2. Levels 5–8 must appear locked on Level Map until Level 4 is completed
 3. All phrases must work in all four gameplay modes
-4. Phase 2 badge must be grantable on completion of Level 8
+4. Phase 3 badge must be grantable on completion of Level 8
 
 **Full Phrase List:**
 
@@ -349,16 +369,16 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 | 2 | Enter Level 5 → cycle all 8 phrases | Correct Spanish/English for all family phrases |
 | 3 | Run Shadow Challenge on Level 6 phrase "¡Vamos!" | TTS plays; mic captures; fuzzy match works |
 | 4 | Quick-Fire on Level 7 (colors) | Color images shown; audio plays color name |
-| 5 | Complete Level 8 | Phase 2 badge awarded; animation plays |
+| 5 | Complete Level 8 | Phase 3 badge awarded; animation plays |
 | 6 | Regression: re-enter Level 1 | Phase 1 content unaffected |
 
 ---
 
-### ── ITERATION 3: Phase 3 Content (after Iteration 2 tested & approved) ──
+### ── ITERATION 4: Phase 4 Content (after Iteration 3 tested & approved) ──
 
 ---
 
-### Feature 11: Phase 3 Content — Explorer (Levels 9–12, Phrases 61–100)
+### Feature 11: Phase 4 Content — Explorer (Levels 9–12, Phrases 61–100)
 
 **Description:** 40 phrases across 4 advanced levels. Data-only addition; no engine changes.
 
@@ -366,7 +386,7 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 1. All 40 phrases must be correctly mapped (Spanish ↔ English)
 2. Levels 9–12 must appear locked until Level 8 is completed
 3. All phrases must work in all four gameplay modes
-4. Phase 3 / "Explorer" badge awarded on completion of Level 12
+4. Phase 4 / "Explorer" badge awarded on completion of Level 12
 5. Full completion (all 12 levels) must trigger a special "Lingua Legend" celebration
 
 **Full Phrase List:**
@@ -422,8 +442,8 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 | 2 | Enter Level 9 → spot-check "¿Cuánto cuesta?" | Correct phrase shown; TTS plays correctly |
 | 3 | Roleplay Level 10 "Buy a bus ticket" scenario | Scenario completes when correct phrase spoken/tapped |
 | 4 | Quick-Fire Level 11 (time words) | Time-related images shown; audio matches |
-| 5 | Complete Level 12 | Phase 3 badge + "Lingua Legend" full-completion celebration |
-| 6 | Regression: all Phase 1 & 2 levels still show correct star ratings | No regressions from data addition |
+| 5 | Complete Level 12 | Phase 4 badge + "Lingua Legend" full-completion celebration |
+| 6 | Regression: all Phase 1 & Phase 3 levels still show correct star ratings | No regressions from data addition |
 
 ---
 
@@ -444,33 +464,13 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 
 ---
 
-### ── ITERATION 5: Admin Dashboard + Contact Admin + User Self-Service Settings ──
-
-> **Stop gate:** Do not begin Iteration 5 implementation until Phase 1 UAT (Iteration 1) is signed off.
-> Full task list: `docs/TASKS.md` — T5.1 through T5.41.
-
-**Features added:**
-- **Feature 12 — Contact Admin:** floating FAB on all logged-in screens; "Contact Admin" link on login page; CF-0 (handles pre-login and post-login submissions); CF-1 (emails admin on new message)
-- **Feature 13 — Admin Dashboard:** `/admin` route (admin custom claim guard); Users tab (list all users, filter, expand progress); Messages tab (view open/resolved, reply → real email); Settings tab — admin-initiated password reset, username update, email change
-- **Feature 14 — User Self-Service Settings:** `/settings` route (gear icon in LevelMap); self-service password reset (temp password emailed, force-change overlay on next login); self-service username change (email verification → `/verify-username-change`); self-service email change (old-email verification → `/verify-email-change`)
-
-**New Cloud Functions (Node 20, Brevo SMTP):**
-- CF-0 `submitContactMessage`, CF-1 `onContactCreated`, CF-2 `adminReplyToContact`
-- CF-3 `resetPassword` (admin or self), CF-4 `adminUpdateUsername`
-- CF-5 `initiateEmailChange` (admin or self), CF-6 `verifyEmailChange`
-- CF-7 `initiateUsernameChange` (self), CF-8 `verifyUsernameChange`
-
-**Architecture changes:** Firebase Blaze plan required; Nodemailer + Brevo SMTP (300/day free); SMTP credentials stored as Firebase Function Secrets; admin UID in Function env config; admin custom claim on `app_admin@divel.me` account.
-
----
-
 ## Key Constraints & Decisions
 
 1. **Apple Sign-In dropped** — $99/yr Apple Developer account required; violates zero-cost rule.
 2. **Firebase Hosting** chosen over Vercel/GitHub Pages to reuse existing Firebase project (Auth + Firestore already in same project), matching global CLAUDE.md CI/CD pattern.
 3. **Web Speech API** browser support: Chrome/Edge full support; Safari partial; Firefox limited. App will show graceful fallback (tap-to-select) when ASR unavailable.
 4. **Language extensibility**: all phrase data lives in `public/data/{language}/` JSON files. New language = new folder, same engine.
-5. **Cloud Functions (Blaze)** required for admin operations and contact form — approved for Iteration 5. All logic is client-side + Firestore for Iterations 1–4.
+5. **Cloud Functions (Blaze)** required for admin operations and contact form — approved for Iteration 2. All logic is client-side + Firestore for Iterations 1, 3, and 4.
 6. **Admin email: app_admin@divel.me** — Tuta account on Porkbun-registered divel.me domain. Used as the sender for password resets and any system emails. Shared with the Mental Maths / Divel Edu Quiz app. Firebase Auth custom SMTP configured to use this address.
 
 ---
@@ -531,12 +531,7 @@ Each feature has its own test plan above. The integration smoke test across all 
 
 ## Immediate Next Actions
 1. ~~All Iteration 1 tasks (T0–T1)~~ ✅ COMPLETE — full app deployed, all features live
-2. **Phase 1 UAT** — sign off on Iterations 1–4 content before beginning Iteration 5
-3. **Iteration 5 planning** ✅ DONE — REQUIREMENTS (Features 12–14), DESIGN, SPECS, and TASKS all written and approved
-4. **Iteration 5 implementation** — blocked on Phase 1 UAT sign-off (stop gate); begin at T5.1 once UAT approved
+2. **Iteration 2 implementation** — IN PROGRESS — Admin Dashboard (Feature 13), Contact Admin (Feature 12), User Self-Service Settings (Feature 14); tasks T5.1 through T5.41 in TASKS.md
+3. **Iteration 3** — Phase 3 Content (Levels 5–8) — blocked on Iteration 2 sign-off
+4. **Iteration 4** — Phase 4 Content (Levels 9–12) — blocked on Iteration 3 sign-off
 5. **Noun Bank** — expanded to ~1,373 words across 12 categories (`public/data/es/noun_bank.json`)
-
-**Content phase renaming (approved):**
-- Old "Phase 2" (Levels 5–8) → now **Phase 3**
-- Old "Phase 3" (Levels 9–12) → now **Phase 4**
-- New admin/contact/settings features → **Phase 2**
