@@ -20,10 +20,8 @@
 ### Out of Scope
 - Apple Sign-In (requires paid Apple Developer Program — not free)
 - Native mobile app (iOS / Android)
-- Backend server / Cloud Functions (all logic is client-side + Firestore)
 - Paid TTS or ASR services
 - Languages other than Spanish in the initial build (engine supports future addition)
-- Parent dashboard / admin panel
 
 ---
 
@@ -431,3 +429,159 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 5 | Complete Level 12 | Phase 3 "Explorer" badge awarded |
 | 6 | After Level 12 completion | "Lingua Legend" full-completion celebration triggers |
 | 7 | Regression: Levels 1–8 star ratings and badges intact | No regressions introduced by Phase 3 data addition |
+
+---
+
+## Feature 12: Contact Admin
+
+**User Story:** As a user (logged in or not), I want to send a message to the app administrator so that I can report problems, ask questions, or request help.
+
+**Acceptance Criteria:**
+1. A "Contact Admin" link **must** be visible on the login page for users who are not signed in
+2. A floating contact button **must** be present on all logged-in screens (Level Map, Level Page, all four gameplay modes), fixed at the bottom-right corner, always accessible
+3. The contact form **must** include fields for username, email address, and message (free text, maximum 2,000 characters)
+4. When the user is not signed in, the username and email fields **must** be editable and required
+5. When the user is signed in, the username and email fields **shall** be pre-filled from their account and displayed as read-only
+6. Submitting the form **must** store the message in the `contactMessages` Firestore collection via a Cloud Function (CF-0 `submitContactMessage`)
+7. On successful submission, the form **shall** display a success confirmation message and close or reset
+8. The administrator **must** receive an email notification at `app_admin@divel.me` within 2 minutes of a new message being submitted
+9. The contact button and form **must** be accessible on all screen sizes and **must** meet the 44px minimum touch-target requirement
+10. An empty message field **must** prevent form submission and display an inline validation error
+
+**Test Plan:**
+
+| # | Step | Expected Result |
+|---|---|---|
+| 1 | Open `/login`; locate Contact Admin link | Link visible below login form |
+| 2 | Click link; inspect form fields | Username and email fields are empty and editable |
+| 3 | Submit form with all fields filled | Success message shown; `contactMessages` document created in Firestore with `uid: null` |
+| 4 | Check `app_admin@divel.me` inbox within 2 minutes | Email received with username, sender email, message body |
+| 5 | Sign in; open Level Map | Floating contact button visible bottom-right |
+| 6 | Navigate to a gameplay mode | Contact button still visible |
+| 7 | Click contact button while signed in | Form opens with username and email pre-filled (read-only) |
+| 8 | Submit form while signed in | Success shown; `contactMessages` document created with user's Firebase UID |
+| 9 | Submit form with empty message field | Inline error shown; form not submitted |
+| 10 | Submit form with message exceeding 2,000 characters | Inline error shown; form not submitted |
+
+---
+
+## Feature 13: Admin Dashboard
+
+**User Story:** As the app administrator, I want a secure dashboard inside the app so that I can view user progress, read and reply to contact messages, and manage user accounts (password reset, username update, login email update) without needing to access the Firebase Console.
+
+**Acceptance Criteria:**
+
+### Access Control
+1. The admin dashboard **must** only be accessible to a user whose Firebase ID token contains the custom claim `admin: true`
+2. Any authenticated user who lacks the admin claim **must** be silently redirected to the Level Map (`/`) when navigating to `/admin`
+3. Any unauthenticated user navigating to `/admin` **must** be redirected to `/login`
+
+### Users Tab
+4. The Users tab **must** display a list of all registered users, showing at minimum: username, email, XP total, and number of completed levels
+5. The Users tab **must** provide a text filter that narrows the displayed list by username in real time
+6. Expanding a user row **shall** display that user's full progress: XP, per-level star ratings, and earned badges
+
+### Messages Tab
+7. The Messages tab **must** display all contact messages from Feature 12, grouped into "Open" and "Resolved" sections, ordered by most recent first
+8. Each message **shall** show: sender username, sender email, message body, submission timestamp, and any existing replies
+9. The admin **must** be able to type a reply and send it; sending **must** trigger a real email to the user's email address from `app_admin@divel.me`
+10. After a reply is sent, the message **must** be automatically marked as "Resolved" in Firestore
+
+### Settings Tab — Reset Password (admin-initiated)
+11. The admin **must** be able to select any user and trigger a password reset
+12. The reset **must** generate a cryptographically random temporary password (minimum 12 characters) server-side via Firebase Admin SDK
+13. The temporary password **must** be emailed to the user's registered email address
+14. The temporary password **must never** be displayed to the admin or returned to the client
+15. After reset, the user's Firestore document **must** have `requiresPasswordChange: true` set
+16. When a user with `requiresPasswordChange: true` signs in, they **must** be shown a full-screen password-change overlay that cannot be dismissed until a new password is saved
+17. Once the user sets a new password, `requiresPasswordChange` **must** be cleared from their Firestore document and the user **must** remain signed in
+
+### Settings Tab — Update Username (admin-initiated)
+18. The admin **must** be able to enter a new display name (1–40 characters) for any selected user and save it directly (no verification step required for admin)
+19. Saving **must** update both the Firebase Auth `displayName` and the `username` field in `users/{uid}` Firestore document
+20. The affected user **must** receive an email notification informing them their username has been changed
+
+### Settings Tab — Update Login Email (admin-initiated)
+21. The admin **must** be able to enter a new login email address for any selected user and initiate a change request
+22. Initiating the change **must** send a verification email to the user's **current** email address containing a secure time-limited link (valid for 24 hours)
+23. The user **must** click the verification link in the email, which takes them to `/verify-email-change` in the app
+24. Only after the user clicks the link and the token is validated **must** the login email be updated in Firebase Auth via Admin SDK
+25. After a successful email change, a confirmation email **shall** be sent to the new email address
+26. A verification link older than 24 hours **must** be rejected with a "Link expired" error; the pending change **must** be removed from Firestore
+27. An invalid or already-used token **must** be rejected with an "Invalid link" error
+28. All user management operations in the Settings tab **must** require the caller to hold the `admin: true` custom claim, validated server-side in the Cloud Function
+
+**Test Plan:**
+
+| # | Step | Expected Result |
+|---|---|---|
+| 1 | Sign in as a non-admin user; navigate to `/admin` | Redirected to Level Map |
+| 2 | Navigate to `/admin` while signed out | Redirected to `/login` |
+| 3 | Sign in as admin; navigate to `/admin` | Dashboard loads with three tabs: Users, Messages, Settings |
+| 4 | Users tab: verify all registered users appear | List shows username, email, XP, completed levels |
+| 5 | Users tab: type partial username in filter | List narrows in real time to matching users |
+| 6 | Users tab: expand a user row | XP, per-level stars, and badges shown |
+| 7 | Messages tab: submit a contact form as a non-admin user | Message appears in Open section of Messages tab |
+| 8 | Messages tab: type a reply and send | Reply email arrives in user's inbox; message moves to Resolved |
+| 9 | Settings tab: reset password for a test user | User receives email with temporary password; admin sees only "Success" confirmation |
+| 10 | Test user logs in with temporary password | `requiresPasswordChange` flag detected; full-screen password-change overlay shown |
+| 11 | Test user sets new password via overlay | Overlay dismisses; `requiresPasswordChange` cleared in Firestore; user stays signed in |
+| 12 | Settings tab: update username for a test user | Display name updated immediately in-app; user receives email notification |
+| 13 | Settings tab: initiate email change for a test user | Verification email arrives at user's current email address |
+| 14 | User clicks verification link | `/verify-email-change` page loads; success message shown; user can now sign in with new email |
+| 15 | Use a verification link after 24 hours | "Link expired" error shown; pending change removed from Firestore |
+| 16 | Use an invalid token in the verification URL | "Invalid link" error shown |
+
+---
+
+## Feature 14: User Self-Service Settings
+
+**User Story:** As a signed-in user, I want to manage my own account from a Settings page inside the app so that I can reset my password, update my username, or change my login email without needing to contact the admin.
+
+**Acceptance Criteria:**
+
+### Access & Navigation
+1. A settings icon (gear) **must** be accessible from the Level Map header for all signed-in users
+2. Clicking the settings icon **must** navigate to or open a Settings page/panel at `/settings`
+3. The Settings page **must** be protected — unauthenticated users navigating to `/settings` **must** be redirected to `/login`
+
+### Self-Service Password Reset
+4. The Settings page **must** provide a "Reset my password" option
+5. Before proceeding, a confirmation dialog **must** ask the user to confirm; cancelling **must** abort the action
+6. On confirmation, a Cloud Function **must** generate a random temporary password, email it to the user's registered address, set `requiresPasswordChange: true` in Firestore, and sign the user out
+7. The temporary password **must never** be returned to the client or displayed in the app
+8. After sign-out, the user **shall** see the login page with a message: "A temporary password has been sent to your email"
+9. When the user signs back in with the temporary password, the full-screen password-change overlay from Feature 13 (AC 16–17) **must** appear
+
+### Self-Service Username Change
+10. The Settings page **must** provide a "Change username" option
+11. Clicking it **must** trigger a verification email to the user's registered email address via a Cloud Function; no new username is entered at this stage
+12. The verification email **must** contain a secure time-limited link (valid for 24 hours) pointing to `/verify-username-change?token=...&uid=...`
+13. On that page, after token validation, the user **must** be presented with a text input field to enter their new username (1–40 characters)
+14. Submitting the new username **must** update both Firebase Auth `displayName` and `users/{uid}.username` in Firestore
+15. A verification link older than 24 hours **must** be rejected with a "Link expired" error
+16. An invalid or already-used token **must** be rejected with an "Invalid link" error
+
+### Self-Service Login Email Change
+17. The Settings page **must** provide a "Change login email" option with an input field for the new email address
+18. Submitting the new email **must** send a verification email to the user's **current** email address via Cloud Function; no change is made to Auth until the link is clicked
+19. The verification flow **must** use the same `/verify-email-change` page and token mechanism as Feature 13 (ACs 22–27)
+20. A user **must not** be able to initiate a new email change while a previous change is still pending
+
+**Test Plan:**
+
+| # | Step | Expected Result |
+|---|---|---|
+| 1 | Sign in; tap gear icon in Level Map header | Settings page opens |
+| 2 | Navigate to `/settings` while signed out | Redirected to `/login` |
+| 3 | Settings → "Reset my password" → confirm | Signed out; login page shows "A temporary password has been sent to your email" |
+| 4 | Check inbox for temporary password email | Email received; temporary password shown in email |
+| 5 | Sign in with temporary password | ForcePasswordChange overlay shown immediately |
+| 6 | Enter and save new password | Overlay dismissed; `requiresPasswordChange` cleared; user remains signed in |
+| 7 | Settings → "Change username" | Verification email sent to user's registered email |
+| 8 | Click link in email | `/verify-username-change` page loads; username input field shown |
+| 9 | Enter new username and submit | Username updated in-app immediately; Auth displayName updated |
+| 10 | Use username-change link after 24 hours | "Link expired" error shown |
+| 11 | Settings → "Change login email" → enter new email → submit | Verification email sent to current email address |
+| 12 | Click link in current-email verification | `/verify-email-change` page loads; success shown; confirmation sent to new email |
+| 13 | Try to initiate another email change while one is pending | Error message: a change is already pending |

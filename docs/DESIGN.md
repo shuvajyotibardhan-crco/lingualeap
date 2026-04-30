@@ -4,56 +4,63 @@
 
 ## High-Level Overview
 
-LinguaLeap is a client-side-only progressive web app. There is no backend server or Cloud Functions — all game logic runs in the browser, all persistence goes directly to Firebase Firestore via the client SDK, and all speech (TTS + ASR) uses the browser's built-in Web Speech API. Firebase Auth handles identity; Firebase Hosting serves the static build. This keeps the running cost at zero and the architecture simple: React renders the UI, custom hooks manage state and side-effects, and JSON files under `public/data/es/` supply all phrase content.
+LinguaLeap is a progressive web app with a thin serverless backend. All gameplay logic runs in the browser: persistence goes directly to Firebase Firestore via the client SDK, and speech (TTS + ASR) uses the browser's built-in Web Speech API. Firebase Auth handles identity; Firebase Hosting serves the static build. For admin and account-management operations that require elevated trust — cross-user data access, password resets, and transactional email — a small set of Firebase Cloud Functions runs server-side via the Firebase Admin SDK. All other operations remain client-side, keeping cost near zero and the architecture simple.
 
 ---
 
 ## Architecture Diagram
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                          Browser (Client)                            │
-│                                                                      │
-│  ┌─────────────┐   ┌─────────────────────────────────────────────┐  │
-│  │  React App  │   │              Web Speech API                  │  │
-│  │  (Vite PWA) │   │  SpeechSynthesis (TTS) │ SpeechRecognition  │  │
-│  └──────┬──────┘   └─────────────────────────────────────────────┘  │
-│         │                                                            │
-│  ┌──────▼──────────────────────────────────────────────────────┐    │
-│  │                     React Component Tree                     │    │
-│  │                                                              │    │
-│  │  AuthContext ──► LoginPage / RegisterPage                    │    │
-│  │  ProgressContext ──► LevelMap ──► LevelPage                  │    │
-│  │                          │                                   │    │
-│  │              ┌───────────┼───────────────┐                   │    │
-│  │           Discovery  Shadow          Roleplay  QuickFire      │    │
-│  │           Mode       Challenge       Mode      Mode           │    │
-│  │              └───────────┴───────────────┘                   │    │
-│  │                          │                                   │    │
-│  │              PhraseCard ─┤ TTS button (useTTS)               │    │
-│  │                          └ Mic button  (useASR)              │    │
-│  └──────────────────────────────────────────────────────────────┘    │
-│         │                         │                                  │
-│  ┌──────▼──────┐         ┌────────▼───────┐                         │
-│  │ /data/es/      │         │  firebase.js   │                         │
-│  │ es/         │         │  (client SDK)  │                         │
-│  │ level_1.json│         └────────┬───────┘                         │
-│  │ level_2.json│                  │                                  │
-│  │   ...       │     ┌────────────┴────────────┐                    │
-│  └─────────────┘     │                         │                    │
-│                       ▼                         ▼                    │
-│               Firebase Auth            Firebase Firestore            │
-│               (email/Google)           (user progress docs)          │
-│                                                                      │
-│  Service Worker (Vite PWA plugin) ─ caches all assets offline        │
-└──────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                            Browser (Client)                             │
+│                                                                         │
+│  ┌─────────────┐   ┌──────────────────────────────────────────────┐    │
+│  │  React App  │   │              Web Speech API                   │    │
+│  │  (Vite PWA) │   │  SpeechSynthesis (TTS) │ SpeechRecognition   │    │
+│  └──────┬──────┘   └──────────────────────────────────────────────┘    │
+│         │                                                               │
+│  ┌──────▼───────────────────────────────────────────────────────────┐  │
+│  │                      React Component Tree                         │  │
+│  │                                                                   │  │
+│  │  AuthContext ──► LoginPage / RegisterPage / UserSettings          │  │
+│  │  ProgressContext ──► LevelMap ──► LevelPage                       │  │
+│  │                   │       │                                       │  │
+│  │              ContactBtn  ⚙ Settings                               │  │
+│  │                          │                                        │  │
+│  │              ┌───────────┼───────────────┐                        │  │
+│  │           Discovery  Shadow          Roleplay  QuickFire           │  │
+│  │           Mode       Challenge       Mode      Mode                │  │
+│  │                                                                   │  │
+│  │  AdminRoute ──► AdminDashboard (Users | Messages | Settings tab)  │  │
+│  │                                                                   │  │
+│  │  VerifyEmailChangePage / VerifyUsernameChangePage (public)        │  │
+│  └──────────────────────────────────────────────────────────────────┘  │
+│         │                              │                                │
+│  ┌──────▼──────┐             ┌─────────▼──────┐                        │
+│  │ /data/es/   │             │  firebase.js   │                        │
+│  │ level_N.json│             │  (client SDK)  │                        │
+│  │ noun_bank   │             └─────────┬──────┘                        │
+│  └─────────────┘                       │                               │
+│                        ┌───────────────┼───────────────┐               │
+│                        ▼               ▼               ▼               │
+│                  Firebase Auth   Firestore      Cloud Functions         │
+│                  (email/Google)  (user docs,   (Admin SDK calls,        │
+│                                  contact msgs) email dispatch)          │
+│                                                        │               │
+│  Service Worker (Vite PWA) ── caches assets offline    │               │
+└────────────────────────────────────────────────────────┼───────────────┘
+                                                         │ SMTP
+                                                    Brevo / SMTP
+                                                  (transactional email)
 
                               ▲  deploy
                               │
                   GitHub Actions (deploy.yml)
                   triggered on push to main
                               │
-                  Firebase Hosting (CDN)
+                  ┌───────────┴────────────┐
+            Firebase Hosting          Cloud Functions
+                 (CDN)               (Node 20, us-central1)
 ```
 
 ---
@@ -139,8 +146,67 @@ Plays a CSS/Lottie animation on level completion or badge award. Auto-dismisses 
 ### `src/components/NounBank.jsx`
 Slide-up panel showing 1,373 Traveller's Noun Bank words. Features a search input (filters by Spanish word or English translation) and 12 scrollable category tabs (All, People, Places, Food, Animals, Body, Clothing, Nature, Transport, Home, School, Colours, Time). Accessible from the mode-selector header and from within every mode via a 📚 button. Tapping a word plays its TTS.
 
+### `src/components/ContactButton.jsx`
+Floating action button fixed to the bottom-right corner of all logged-in screens (`position: fixed`, `z-50`, 56px circle, brand-orange). Opens `ContactModal`. Imports `useAuth` to pass pre-fill values. Rendered in `LevelMap`, `LevelPage`, and all four mode components.
+
+### `src/components/ContactModal.jsx`
+Slide-up form panel (same bottom-sheet pattern as NounBank). Props: `isOpen`, `onClose`, `prefillUsername?`, `prefillEmail?`. When pre-fill values are present the username and email fields are shown read-only; otherwise both are editable and required. Message textarea enforces a 2,000-character limit with a live counter. On submit calls `useCallable('submitContactMessage')`. Renders a success state after submission instead of closing immediately.
+
+### `src/components/AdminRoute.jsx`
+Route guard for `/admin`. On mount calls `user.getIdTokenResult(true)` (force-refresh) to read Firebase custom claims. If `claims.admin !== true`, redirects to `/`. Shows a loading spinner while the token is being fetched. Wraps `AdminDashboard` in the route tree.
+
+### `src/components/ForcePasswordChange.jsx`
+Full-screen fixed overlay (z-60, white background) that appears when `progress.requiresPasswordChange === true`. Cannot be dismissed — there is no close button. Contains a password + confirm-password form. On submit calls `updatePassword(auth.currentUser, newPassword)` from `firebase/auth`, then writes `{ requiresPasswordChange: false }` to `users/{uid}` (client write, permitted by existing rules). On success the overlay unmounts; the user remains signed in.
+
+### `src/pages/AdminDashboard.jsx`
+Main admin page at `/admin`. Sticky orange header with "Admin Dashboard" label and a link back to the Level Map. Three tab buttons (Users | Messages | Settings) switch between `UsersTab`, `MessagesTab`, and `SettingsTab` sub-components. Passes the `useCallable` hook instances down as props to avoid re-creating callable references in child tabs.
+
+### `src/pages/UserSettings.jsx`
+Settings page at `/settings`, protected by `ProtectedRoute`. Accessible via a gear icon in the LevelMap header. Displays three action sections: Reset Password, Change Username, Change Email. Each section has a button that triggers the appropriate Cloud Function via `useCallable`. Reset Password shows a confirmation dialog before proceeding and signs the user out on success. Change Username shows a "send verification email" button with a success banner after dispatch. Change Email shows an email input field; dispatching the change while a `pendingEmailChange` exists in Firestore shows an inline "a change is already pending" error.
+
+### `src/pages/VerifyEmailChangePage.jsx`
+Public page at `/verify-email-change`. Reads `token` and `uid` query parameters via `useSearchParams`. On mount calls `verifyEmailChange` Cloud Function. Shows a loading spinner, then either a success message (displaying the new email address) or an error message (expired / invalid token). Includes a "Go to Sign In" button.
+
+### `src/pages/VerifyUsernameChangePage.jsx`
+Public page at `/verify-username-change`. Reads `token` and `uid` query params. On mount calls `verifyUsernameChangeToken` Cloud Function to validate the token (without yet committing a name). On success renders a text input for the new username (1–40 characters) and a submit button that calls `applyUsernameChange`. On error shows the same expired/invalid states as `VerifyEmailChangePage`.
+
+### `src/admin/UsersTab.jsx`
+Queries `users` collection via `getDocs` on mount (Admin SDK via Cloud Functions is not used here — the admin user's elevated Firestore access comes from their client-side auth token being used against updated Firestore rules). Renders a search input that filters client-side by username. Each user row shows username, email, XP, and completed-level count. Expanding a row reveals a per-level star grid and badge list.
+
+### `src/admin/MessagesTab.jsx`
+Queries `contactMessages` collection ordered by `createdAt` descending. Groups documents into "Open" and "Resolved" sections. Each message card is expandable to show full text and the reply thread. An inline reply form (textarea + Send button) calls the `adminReplyToContact` Cloud Function via `useCallable`. Shows a loading indicator per card during send.
+
+### `src/admin/SettingsTab.jsx`
+Contains a user-search input (queries `users` by username prefix). On selecting a user, three action panels are revealed side by side (or stacked on mobile): Reset Password, Update Username, Update Login Email. Each panel calls its corresponding Cloud Function. Reset Password requires an "Are you sure?" confirmation step. All panels show loading, success, and error states independently.
+
+### `src/hooks/useCallable.js`
+Thin wrapper around Firebase `httpsCallable`. Returns `{ call, loading, error, data }`. `call(payload)` invokes the named Cloud Function, sets `loading: true` during execution, and populates `data` or `error` on completion. Allows components to avoid boilerplate try/catch and loading state management for every Cloud Function call.
+
+### `functions/src/email.js`
+Nodemailer transporter factory. Reads SMTP credentials from Firebase Function Secrets (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`) via `defineSecret`. Exports `sendEmail(to, subject, textBody)` — an async function that sends via the configured transporter. `FROM_ADDRESS` is set to `"LinguaLeap <noreply@divel.me>"`. All emails are plain-text only to maximise deliverability and prevent credential hiding in HTML.
+
+### `functions/src/adminHelpers.js`
+Shared utilities for Cloud Functions. Exports:
+- `assertAdmin(context)` — checks `context.auth?.uid === process.env.ADMIN_UID`; throws `HttpsError('permission-denied')` if not
+- `generateTempPassword()` — `crypto.randomBytes(9).toString('base64url').slice(0, 12)` (~71 bits entropy)
+- `generateToken()` — `crypto.randomBytes(32).toString('hex')` (64 hex chars, 256 bits)
+
+### `functions/index.js` — Cloud Functions (9 total)
+
+| Function | Type | Caller | Purpose |
+|---|---|---|---|
+| `submitContactMessage` | callable | any | Validates + writes contact message to Firestore via Admin SDK (handles auth'd and pre-login users) |
+| `onContactCreated` | Firestore trigger | automatic | Emails admin at `app_admin@divel.me` on new contact message |
+| `adminReplyToContact` | callable | admin only | Appends reply to Firestore, emails reply to user, marks message resolved |
+| `resetPassword` | callable | self or admin | Generates random temp password, updates Auth, sets `requiresPasswordChange`, emails user. Admin can target any UID; non-admin can only target own UID |
+| `adminUpdateUsername` | callable | admin only | Directly updates Auth displayName + Firestore `username`; emails notification to user |
+| `initiateEmailChange` | callable | self or admin | Stores `pendingEmailChange` token in Firestore, emails verification link to current email. Admin can target any UID; non-admin only own UID |
+| `verifyEmailChange` | callable | token-auth | Validates token, updates email in Auth, clears pending state, emails new address |
+| `initiateUsernameChange` | callable | self only | Stores `pendingUsernameChange` token in Firestore, emails verification link to user |
+| `verifyUsernameChange` | callable | token-auth | Validates token, accepts new username in payload, updates Auth displayName + Firestore |
+
 ### `.github/workflows/deploy.yml`
-GitHub Actions workflow: triggers on push to `main`, installs deps, builds with env vars from GitHub Secrets, and deploys to Firebase Hosting via `FirebaseExtended/action-hosting-deploy@v0`. Firestore security rules are managed directly in the Firebase Console (the service account credential scoped to Hosting deploy does not carry the Service Usage permissions required for `firebase-tools` rules deployment).
+GitHub Actions workflow: triggers on push to `main`, installs deps (including `functions/` Node deps), builds the React app with env vars from GitHub Secrets, then deploys both Firebase Hosting and Cloud Functions via the Firebase CLI authenticated with the service account secret. Firestore security rules are managed directly in the Firebase Console (the service account lacks the Service Usage permissions required for `firebase-tools` rules deployment).
 
 ---
 
@@ -152,8 +218,11 @@ This is a pure client-side app — no SSR, no API routes, no server. Vite's HMR 
 **Why Firebase over Supabase or PlanetScale?**
 Firebase Auth has built-in Google OAuth, email/password, and custom SMTP support in one SDK. Firestore's offline persistence handles the "works on a plane" requirement without extra code. Both fit the zero-cost constraint (Spark plan free tier). The global CLAUDE.md CI/CD pattern is already built around Firebase Hosting + GitHub Actions.
 
-**Why client-side only (no Cloud Functions)?**
-Every operation (auth, read progress, write XP) can be done safely from the client with Firestore security rules. Eliminating Cloud Functions removes billing risk, cold-start latency, and deployment complexity.
+**Why Cloud Functions for admin operations?**
+Three admin capabilities are impossible to implement securely from the browser: (1) generating and setting a random password for another user (requires Firebase Admin SDK, which only runs server-side); (2) reading all users' Firestore documents without opening the security rules to all authenticated users; (3) sending transactional email from a trusted server address. Cloud Functions provide a minimal server surface for exactly these cases while leaving all gameplay logic client-side. The Firebase Blaze plan's free tier (2M function invocations/month) means the cost remains effectively zero for admin-level traffic.
+
+**Why Nodemailer + Brevo SMTP over Firebase Extensions?**
+The Firebase "Trigger Email" extension writes email jobs to a Firestore collection, adding latency and coupling email delivery to Firestore write quotas. Nodemailer inside the Cloud Function sends email directly from the function's execution context, is easier to debug (standard SMTP logs), and gives full control over message format. Brevo's free tier (300 emails/day) is generous for admin notifications and user account emails.
 
 **Why browser-native TTS/ASR?**
 Cost is zero, audio never leaves the device (privacy), and no API key management. The trade-off is browser support variance — mitigated by the ASR tap-to-select fallback and TTS voice fallback.
@@ -173,7 +242,7 @@ Keeps the engine entirely language-agnostic. To add French, a developer creates 
 
 | Layer | Technology | Rationale |
 |---|---|---|
-| Frontend framework | React 18 + Vite | Fast DX, component model, HMR |
+| Frontend framework | React 19 + Vite | Fast DX, component model, HMR |
 | Styling | Tailwind CSS | Utility-first, rapid kid-UI iteration |
 | Routing | React Router v6 | SPA routing, protected route support |
 | Auth | Firebase Auth | Google OAuth + email/password, free |
@@ -182,6 +251,8 @@ Keeps the engine entirely language-agnostic. To add French, a developer creates 
 | ASR | Web Speech API (`SpeechRecognition`) | Browser-native, private, zero cost |
 | Fuzzy match | Custom Levenshtein (`fuzzy.js`) | No dependency, tiny, tuneable threshold |
 | PWA / offline | Vite PWA plugin (Workbox) | Auto-generates service worker |
+| Serverless backend | Firebase Cloud Functions (Node 20) | Admin SDK ops, transactional email — Blaze plan |
+| Email delivery | Nodemailer + Brevo SMTP | 300 emails/day free, reliable deliverability |
 | Icons | Lucide React | MIT, free, tree-shakeable |
 | Illustrations | unDraw | CC0, free SVG scenes |
 | CI/CD | GitHub Actions | Matches global CLAUDE.md deploy pattern |
@@ -193,10 +264,12 @@ Keeps the engine entirely language-agnostic. To add French, a developer creates 
 
 1. Developer pushes to `main` on GitHub.
 2. `.github/workflows/deploy.yml` triggers.
-3. Workflow installs deps, builds with env vars from GitHub Actions Secrets (`VITE_FIREBASE_*`).
-4. Build output (`dist/`) deployed to Firebase Hosting via `FirebaseExtended/action-hosting-deploy@v0`.
-5. Firestore security rules deployed via `firebase-tools` using the service account JSON secret.
-6. Live URL: Firebase Hosting default domain (or custom domain if configured later).
+3. Workflow installs React app deps (`npm ci`) and Cloud Functions deps (`cd functions && npm ci`).
+4. React app is built with env vars from GitHub Actions Secrets (`VITE_FIREBASE_*`).
+5. Firebase CLI (installed in workflow) deploys Hosting (`dist/`) and Cloud Functions together via `firebase deploy --only hosting,functions`, authenticated with the `FIREBASE_SERVICE_ACCOUNT` secret.
+6. SMTP credentials (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`) and `ADMIN_UID` are stored as Firebase Function Secrets — set once via CLI, never in GitHub Secrets or source code.
+7. Firestore security rules are managed manually via Firebase Console (service account lacks `serviceusage.googleapis.com` permission — per CLAUDE.md constraint).
+8. Live URL: `https://lingualeap-divel.web.app`
 
 No manual `firebase deploy` step is ever needed or used — Firebase CLI login is unreliable on this machine.
 
@@ -210,6 +283,8 @@ No manual `firebase deploy` step is ever needed or used — Firebase CLI login i
 | TTS voice quality | Depends on OS-installed voices. Mobile devices typically have one Spanish voice; desktop varies. No control over voice quality. |
 | Offline auth | Firebase Auth `onAuthStateChanged` works offline for already-signed-in users. New sign-in requires network. |
 | Firestore offline | Queued writes flush on reconnect, but there is no UI indicator for "pending sync" in v1. |
+| Cloud Function cold start | First invocation after idle may take 1–2 seconds. Acceptable for admin operations; gameplay is unaffected (no Cloud Functions in the game path). |
+| Admin claim propagation | Firebase custom claims take up to 1 hour to propagate to an already-active session. `AdminRoute` forces a token refresh (`getIdTokenResult(true)`) to mitigate this for the first `/admin` navigation. |
+| SMTP daily limit | Brevo free tier: 300 emails/day. Sufficient for admin + account-management traffic at this scale. Upgrade to paid tier if volume grows. |
 | Illustration coverage | unDraw SVGs cover generic scenes well; level-specific themed scenes may require custom SVG work. |
-| No parent dashboard | Progress is visible only to the logged-in user. Parental oversight requires sharing a login. |
 | 60% ASR threshold | Chosen conservatively for encouragement; may need tuning after real-child user testing. |

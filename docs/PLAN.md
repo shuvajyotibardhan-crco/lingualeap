@@ -444,13 +444,33 @@ Each stage requires user sign-off before the next begins. Docs committed to git 
 
 ---
 
+### ── ITERATION 5: Admin Dashboard + Contact Admin + User Self-Service Settings ──
+
+> **Stop gate:** Do not begin Iteration 5 implementation until Phase 1 UAT (Iteration 1) is signed off.
+> Full task list: `docs/TASKS.md` — T5.1 through T5.41.
+
+**Features added:**
+- **Feature 12 — Contact Admin:** floating FAB on all logged-in screens; "Contact Admin" link on login page; CF-0 (handles pre-login and post-login submissions); CF-1 (emails admin on new message)
+- **Feature 13 — Admin Dashboard:** `/admin` route (admin custom claim guard); Users tab (list all users, filter, expand progress); Messages tab (view open/resolved, reply → real email); Settings tab — admin-initiated password reset, username update, email change
+- **Feature 14 — User Self-Service Settings:** `/settings` route (gear icon in LevelMap); self-service password reset (temp password emailed, force-change overlay on next login); self-service username change (email verification → `/verify-username-change`); self-service email change (old-email verification → `/verify-email-change`)
+
+**New Cloud Functions (Node 20, Brevo SMTP):**
+- CF-0 `submitContactMessage`, CF-1 `onContactCreated`, CF-2 `adminReplyToContact`
+- CF-3 `resetPassword` (admin or self), CF-4 `adminUpdateUsername`
+- CF-5 `initiateEmailChange` (admin or self), CF-6 `verifyEmailChange`
+- CF-7 `initiateUsernameChange` (self), CF-8 `verifyUsernameChange`
+
+**Architecture changes:** Firebase Blaze plan required; Nodemailer + Brevo SMTP (300/day free); SMTP credentials stored as Firebase Function Secrets; admin UID in Function env config; admin custom claim on `app_admin@divel.me` account.
+
+---
+
 ## Key Constraints & Decisions
 
 1. **Apple Sign-In dropped** — $99/yr Apple Developer account required; violates zero-cost rule.
 2. **Firebase Hosting** chosen over Vercel/GitHub Pages to reuse existing Firebase project (Auth + Firestore already in same project), matching global CLAUDE.md CI/CD pattern.
 3. **Web Speech API** browser support: Chrome/Edge full support; Safari partial; Firefox limited. App will show graceful fallback (tap-to-select) when ASR unavailable.
 4. **Language extensibility**: all phrase data lives in `public/data/{language}/` JSON files. New language = new folder, same engine.
-5. **No backend functions needed** — all logic is client-side + Firestore.
+5. **Cloud Functions (Blaze)** required for admin operations and contact form — approved for Iteration 5. All logic is client-side + Firestore for Iterations 1–4.
 6. **Admin email: app_admin@divel.me** — Tuta account on Porkbun-registered divel.me domain. Used as the sender for password resets and any system emails. Shared with the Mental Maths / Divel Edu Quiz app. Firebase Auth custom SMTP configured to use this address.
 
 ---
@@ -510,8 +530,13 @@ Each feature has its own test plan above. The integration smoke test across all 
 ---
 
 ## Immediate Next Actions
-1. ~~Write `docs/REQUIREMENTS.md`~~ ✅ Done — **APPROVED**
-2. ~~Write `docs/DESIGN.md`~~ ✅ Done — **APPROVED**
-3. ~~Write `docs/SPECS.md`~~ ✅ Done — **APPROVED**
-4. ~~Write `docs/TASKS.md`~~ ✅ Done — **APPROVED**
-5. ~~Begin execution~~ 🔨 In progress — T0 (setup + CI/CD) underway
+1. ~~All Iteration 1 tasks (T0–T1)~~ ✅ COMPLETE — full app deployed, all features live
+2. **Phase 1 UAT** — sign off on Iterations 1–4 content before beginning Iteration 5
+3. **Iteration 5 planning** ✅ DONE — REQUIREMENTS (Features 12–14), DESIGN, SPECS, and TASKS all written and approved
+4. **Iteration 5 implementation** — blocked on Phase 1 UAT sign-off (stop gate); begin at T5.1 once UAT approved
+5. **Noun Bank** — expanded to ~1,373 words across 12 categories (`public/data/es/noun_bank.json`)
+
+**Content phase renaming (approved):**
+- Old "Phase 2" (Levels 5–8) → now **Phase 3**
+- Old "Phase 3" (Levels 9–12) → now **Phase 4**
+- New admin/contact/settings features → **Phase 2**
