@@ -1,17 +1,17 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
-const { generateTempPassword, ADMIN_UID } = require('./adminHelpers')
-const { sendEmail, emailSecrets } = require('./email')
+const { generateTempPassword } = require('./adminHelpers')
+const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
 
-exports.adminResetPassword = onCall({ secrets: emailSecrets }, async (request) => {
+exports.adminResetPassword = onCall(async (request) => {
   if (!request.auth) throw new HttpsError('unauthenticated', 'Must be signed in')
 
   const { targetUid } = request.data || {}
   if (!targetUid) throw new HttpsError('invalid-argument', 'targetUid required')
 
-  const isAdmin = request.auth.uid === ADMIN_UID.value()
+  const isAdmin = request.auth.uid === process.env.ADMIN_UID
   if (!isAdmin && request.auth.uid !== targetUid) {
     throw new HttpsError('permission-denied', 'Can only reset your own password')
   }

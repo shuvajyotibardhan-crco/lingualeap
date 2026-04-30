@@ -1,13 +1,13 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
-const { ADMIN_UID, generateToken } = require('./adminHelpers')
-const { sendEmail, emailSecrets } = require('./email')
+const { generateToken } = require('./adminHelpers')
+const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
 
 const APP_URL = 'https://lingualeap-divel.web.app'
 
-exports.initiateEmailChange = onCall({ secrets: emailSecrets }, async (request) => {
+exports.initiateEmailChange = onCall(async (request) => {
   if (!request.auth) throw new HttpsError('unauthenticated', 'Must be signed in')
 
   const { targetUid, newEmail } = request.data || {}
@@ -16,7 +16,7 @@ exports.initiateEmailChange = onCall({ secrets: emailSecrets }, async (request) 
     throw new HttpsError('invalid-argument', 'Valid new email required')
   }
 
-  const isAdmin = request.auth.uid === ADMIN_UID.value()
+  const isAdmin = request.auth.uid === process.env.ADMIN_UID
   if (!isAdmin && request.auth.uid !== targetUid) {
     throw new HttpsError('permission-denied', 'Can only change your own email')
   }

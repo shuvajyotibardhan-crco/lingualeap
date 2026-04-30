@@ -1,27 +1,19 @@
-const { defineSecret } = require('firebase-functions/params')
 const nodemailer = require('nodemailer')
 
-const SMTP_HOST = defineSecret('SMTP_HOST')
-const SMTP_PORT = defineSecret('SMTP_PORT')
-const SMTP_USER = defineSecret('SMTP_USER')
-const SMTP_PASS = defineSecret('SMTP_PASS')
-
-const emailSecrets = [SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS]
-
 async function sendEmail(to, subject, text) {
-  const port = parseInt(SMTP_PORT.value(), 10)
+  const port = parseInt(process.env.SMTP_PORT, 10)
   const transporter = nodemailer.createTransport({
-    host: SMTP_HOST.value(),
+    host: process.env.SMTP_HOST,
     port,
     secure: port === 465,
-    auth: { user: SMTP_USER.value(), pass: SMTP_PASS.value() },
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   })
   await transporter.sendMail({
-    from: `"LinguaLeap" <${SMTP_USER.value()}>`,
+    from: `"LinguaLeap" <${process.env.SMTP_USER}>`,
     to,
     subject,
     text,
   })
 }
 
-module.exports = { sendEmail, emailSecrets }
+module.exports = { sendEmail }

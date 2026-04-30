@@ -33,13 +33,22 @@ jobs:
         run: npm ci
         working-directory: functions
 
+      - name: Write functions env
+        run: |
+          printf 'SMTP_HOST=%s\nSMTP_PORT=%s\nSMTP_USER=%s\nSMTP_PASS=%s\nADMIN_UID=%s\n' \
+            '${{ secrets.SMTP_HOST }}' \
+            '${{ secrets.SMTP_PORT }}' \
+            '${{ secrets.SMTP_USER }}' \
+            '${{ secrets.SMTP_PASS }}' \
+            '${{ secrets.ADMIN_UID }}' > functions/.env
+
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
       - name: Write service account
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
 
-      - name: Deploy hosting + functions
-        run: firebase deploy --only hosting,functions --project ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+      - name: Deploy hosting + functions + firestore rules
+        run: firebase deploy --only hosting,functions,firestore:rules --project ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/sa.json

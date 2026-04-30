@@ -1,11 +1,11 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
 const { assertAdmin } = require('./adminHelpers')
-const { sendEmail, emailSecrets } = require('./email')
+const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
 
-exports.adminUpdateUsername = onCall({ secrets: emailSecrets }, async (request) => {
+exports.adminUpdateUsername = onCall(async (request) => {
   assertAdmin(request)
 
   const { targetUid, newUsername } = request.data || {}

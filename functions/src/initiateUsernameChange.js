@@ -1,13 +1,13 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
 const { generateToken } = require('./adminHelpers')
-const { sendEmail, emailSecrets } = require('./email')
+const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
 
 const APP_URL = 'https://lingualeap-divel.web.app'
 
-exports.initiateUsernameChange = onCall({ secrets: emailSecrets }, async (request) => {
+exports.initiateUsernameChange = onCall(async (request) => {
   if (!request.auth) throw new HttpsError('unauthenticated', 'Must be signed in')
 
   const uid = request.auth.uid

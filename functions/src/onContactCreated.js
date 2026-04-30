@@ -1,8 +1,8 @@
 const { onDocumentCreated } = require('firebase-functions/v2/firestore')
-const { sendEmail, emailSecrets } = require('./email')
+const { sendEmail } = require('./email')
 
 exports.onContactCreated = onDocumentCreated(
-  { document: 'contactMessages/{messageId}', secrets: emailSecrets },
+  'contactMessages/{messageId}',
   async (event) => {
     const data = event.data?.data()
     if (!data) return

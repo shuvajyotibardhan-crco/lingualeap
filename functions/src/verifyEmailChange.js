@@ -1,11 +1,11 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
 const crypto = require('crypto')
-const { sendEmail, emailSecrets } = require('./email')
+const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
 
-exports.verifyEmailChange = onCall({ secrets: emailSecrets }, async (request) => {
+exports.verifyEmailChange = onCall(async (request) => {
   const { uid, token } = request.data || {}
 
   if (!uid || !token) {
