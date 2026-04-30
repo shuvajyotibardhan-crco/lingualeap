@@ -1,7 +1,7 @@
 # Project State
 - **Last Updated:** 2026-04-30
 - **Current Branch:** main
-- **Current Task:** Iteration 2 implementation COMPLETE (code committed) — manual config steps remain before deploy
+- **Current Task:** Awaiting 5 GitHub Secrets + 3 user manual steps, then push to deploy Iteration 2
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS) — Iteration 1
@@ -25,6 +25,10 @@
 19. [x] T2.33–T2.35: UserSettings page; /settings route; /verify-email-change + /verify-username-change routes
 20. [x] T2.36: deploy.yml updated — installs functions deps + deploys hosting + functions via firebase-tools
 21. [x] T2.39: scripts/setAdminClaim.js written
+22. [x] CF config pivot: email.js + adminHelpers.js + all 7 CF files switched from defineSecret/defineString to process.env
+23. [x] deploy.yml: "Write functions env" step added; target expanded to hosting+functions+firestore:rules
+24. [x] firestore.rules: contactMessages create rule added (T2.7 — deployed via CI, not manual Console edit)
+25. [x] functions/.env.example created; functions/.env added to .gitignore
 
 ## Phase Renaming (approved 2026-04-30)
 - Iteration 2 = Admin Dashboard + Contact Admin + User Self-Service Settings (Cloud Functions)
@@ -40,15 +44,24 @@
 - ProgressContext badge map: { 4: 'phase1', 8: 'phase3', 12: 'phase4' }
 - PASS_XP=10, FIRST_ATTEMPT_BONUS=5, PASS_THRESHOLD=0.60
 
-## Manual Steps Required Before Iteration 2 Goes Live (T2.1, T2.7, T2.37, T2.38, T2.39)
+## Steps Required Before Iteration 2 Goes Live
+
+### Claude-executable (needs your secret values):
+- **T2.37+T2.38 [SECRETS]**: Add 5 GitHub Actions Secrets via gh CLI:
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` — Brevo SMTP values
+  - `ADMIN_UID` — Firebase UID of app_admin@divel.me account
+
+### User manual:
 - **T2.1 [MANUAL]**: Firebase Console → upgrade lingualeap-divel to Blaze plan (required for Cloud Functions)
-- **T2.7 [MANUAL]**: Firebase Console → Firestore → Rules → add contactMessages rule (see SPECS.md)
-- **T2.37 [MANUAL]**: `firebase functions:secrets:set SMTP_HOST` then `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (Brevo values)
-- **T2.38 [MANUAL]**: `firebase functions:params:set ADMIN_UID=<uid_of_app_admin_account>`
 - **T2.39 [MANUAL]**: `GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node scripts/setAdminClaim.js <admin_uid>`
   - Get admin UID from Firebase Console → Authentication → find app_admin@divel.me
 
+### Auto-deployed on push (no longer manual):
+- ~~T2.7~~ — contactMessages Firestore rule is now in firestore.rules and deployed via CI
+
 ## Next Immediate Step
-- Complete the 5 manual steps above (T2.1, T2.7, T2.37, T2.38, T2.39)
-- Then push to main → GitHub Actions will build + deploy hosting + functions
-- After deploy: run T2.41 QA (all 34 Verification Plan test cases)
+1. User upgrades Firebase project to Blaze plan (T2.1)
+2. User provides Brevo SMTP credentials + admin UID → Claude sets 5 GitHub Secrets
+3. User runs setAdminClaim.js with service account JSON (T2.39)
+4. Push to main → GitHub Actions deploys hosting + functions + firestore:rules
+5. After deploy: run T2.41 QA (all 34 Verification Plan test cases)
