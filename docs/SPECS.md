@@ -406,9 +406,9 @@ All variables must be prefixed `VITE_` to be exposed to the browser by Vite. A `
 | `VITE_FIREBASE_APP_ID` | Firebase app ID |
 | `FIREBASE_SERVICE_ACCOUNT` | Full JSON from Firebase Console → Project Settings → Service Accounts |
 
-### Firebase Function Secrets (set once via CLI — never in GitHub Secrets or source)
+### Additional GitHub Actions Secrets (functions config — set once)
 
-Set via `firebase functions:secrets:set SECRET_NAME`. Accessed in functions via `defineSecret('SECRET_NAME')`.
+Written to `functions/.env` at deploy time by CI. Accessed in functions via `process.env.*`.
 
 | Secret name | Value |
 |---|---|
@@ -416,14 +416,7 @@ Set via `firebase functions:secrets:set SECRET_NAME`. Accessed in functions via 
 | `SMTP_PORT` | SMTP port (e.g. `587`) |
 | `SMTP_USER` | Brevo SMTP login (account email) |
 | `SMTP_PASS` | Brevo SMTP API key / password |
-
-### Firebase Function Environment Config (set once via CLI)
-
-Set via `firebase functions:config:set admin.uid=<uid>`. Accessed in functions via `process.env.ADMIN_UID` (or `functions.config().admin.uid` for gen1).
-
-| Config key | Value |
-|---|---|
-| `admin.uid` | Firebase Auth UID of the admin account (`app_admin@divel.me`) |
+| `ADMIN_UID` | Firebase Auth UID of the admin account (`app_admin@divel.me`) |
 
 ### ASR / TTS Constants (in `src/lib/`)
 
@@ -567,12 +560,12 @@ Language Learning App/
 |---|---|
 | Auth | Firebase Auth manages all tokens — no custom JWT handling |
 | Firestore rules | `users/{uid}`: scoped to own UID. `contactMessages`: authenticated create with field validation; all reads/writes by admin via Admin SDK (bypasses rules). |
-| Admin identity | Admin UID stored as Firebase Function environment config — never in client bundle or Firestore rules string comparison |
+| Admin identity | Admin UID stored as GitHub Actions Secret → written to `functions/.env` at deploy time — never in client bundle or Firestore rules string comparison |
 | Admin claim | Custom claim `admin: true` set once via Admin SDK script on the admin account. `AdminRoute` force-refreshes the token (`getIdTokenResult(true)`) to get the latest claims. |
 | Cloud Function security | All admin-only callable functions call `assertAdmin(context)` as the first operation — before any data access. CF-5/CF-3 allow self-service by validating `targetUid === context.auth.uid` for non-admin callers. |
 | Token security | Email/username change tokens: 64-char hex (256-bit), generated via `crypto.randomBytes(32)`. Compared using `crypto.timingSafeEqual` to prevent timing attacks. Expire after 24 hours. |
 | Temp password | Generated server-side in CF-3. Never returned to caller. Stored in Auth only — not in Firestore or logs. |
-| SMTP credentials | Stored as Firebase Function Secrets (not environment config) — encrypted at rest, injected at runtime only. Not in source code, `.env`, or GitHub Secrets. |
+| SMTP credentials | Stored as GitHub Actions Secrets; written to `functions/.env` at deploy time by CI. Never in source code or committed `.env` files. |
 | API keys in frontend | Firebase client-side keys are intentionally public; Firestore rules are the security boundary |
 | `.env` file | Never committed; `.env.example` with placeholders committed instead |
 | Service account JSON | Used only in GitHub Actions secrets for CI deploy; never in source code or `.env` |
