@@ -56,8 +56,8 @@
 - **T2.39 [MANUAL]**: `GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node scripts/setAdminClaim.js <admin_uid>`
   - Get admin UID from Firebase Console → Authentication → find app_admin@divel.me
 
-### Auto-deployed on push (no longer manual):
-- ~~T2.7~~ — contactMessages Firestore rule is now in firestore.rules and deployed via CI
+### Still manual (service account lacks serviceusage permission — known CI limitation):
+- **T2.7 [MANUAL]**: Firebase Console → Firestore → Rules → paste the contactMessages rule from `firestore.rules` (lines 8–13)
 
 ## Next Immediate Step — Resume Instructions
 
