@@ -453,7 +453,7 @@ Language Learning App/
 │       ├── submitContactMessage.js # CF-0: open callable — writes contactMessage via Admin SDK
 │       ├── onContactCreated.js     # CF-1: Firestore trigger — emails admin on new message
 │       ├── adminReplyToContact.js  # CF-2: admin callable — emails user + updates Firestore
-│       ├── resetPassword.js        # CF-3: self/admin callable — random temp pass, email, set flag
+│       ├── adminResetPassword.js   # CF-3: self/admin callable — random temp pass, email, set flag
 │       ├── adminUpdateUsername.js  # CF-4: admin callable — direct username update + email notify
 │       ├── initiateEmailChange.js  # CF-5: self/admin callable — token + verification email to current address
 │       ├── verifyEmailChange.js    # CF-6: token-auth callable — validates, updates Auth email
@@ -524,6 +524,8 @@ Language Learning App/
 │   │   └── VerifyUsernameChangePage.jsx # NEW — /verify-username-change; reads token, calls CF-8
 │   ├── App.jsx                     # React Router routes; wraps AuthContext + ProgressContext
 │   └── main.jsx                    # Vite entry point; mounts <App />
+├── scripts/
+│   └── setAdminClaim.js            # One-time script: sets admin custom claim on app_admin@divel.me UID
 ├── docs/
 │   ├── PLAN.md
 │   ├── REQUIREMENTS.md
