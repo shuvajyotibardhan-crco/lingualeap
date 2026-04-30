@@ -183,7 +183,7 @@ Contains a user-search input (queries `users` by username prefix). On selecting 
 Thin wrapper around Firebase `httpsCallable`. Returns `{ call, loading, error, data }`. `call(payload)` invokes the named Cloud Function, sets `loading: true` during execution, and populates `data` or `error` on completion. Allows components to avoid boilerplate try/catch and loading state management for every Cloud Function call.
 
 ### `functions/src/email.js`
-Nodemailer transporter factory. Reads SMTP credentials from Firebase Function Secrets (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`) via `defineSecret`. Exports `sendEmail(to, subject, textBody)` — an async function that sends via the configured transporter. `FROM_ADDRESS` is set to `"LinguaLeap <noreply@divel.me>"`. All emails are plain-text only to maximise deliverability and prevent credential hiding in HTML.
+Nodemailer transporter factory. Reads SMTP credentials from `process.env.SMTP_HOST/PORT/USER/PASS` — injected via `functions/.env` written by GitHub Actions at deploy time. Exports `sendEmail(to, subject, textBody)` — an async function that sends via the configured transporter. All emails are plain-text only to maximise deliverability and prevent credential hiding in HTML.
 
 ### `functions/src/adminHelpers.js`
 Shared utilities for Cloud Functions. Exports:
