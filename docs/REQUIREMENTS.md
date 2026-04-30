@@ -26,7 +26,7 @@
 ---
 
 ## Delivery Strategy
-Build the **complete app** (all engine + UI features) using **Phase 1 content only** (Levels 1–4, 23 phrases). Test and sign off end-to-end. Then bolt on Phase 2 content (Levels 5–8), test, then Phase 3 content (Levels 9–12), test. Phases 2 & 3 require data additions only — no engine code changes.
+Build the **complete app** (all engine + UI features) using **Phase 1 content only** (Levels 1–4, 23 phrases). Test and sign off end-to-end. Phase 2 adds Admin Dashboard, Contact Admin, and User Self-Service Settings (Cloud Functions required). Phase 3 adds content for Levels 5–8; Phase 4 adds Levels 9–12. Phases 3 & 4 require data additions only — no engine code changes.
 
 ---
 
@@ -293,7 +293,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 
 ---
 
-## Feature 10: Phase 2 Content — Connection (Levels 5–8, Phrases 24–60)
+## Feature 10: Phase 3 Content — Connection (Levels 5–8, Phrases 24–60)
 
 *Added after Iteration 1 is tested and approved. Data-only addition — no engine changes.*
 
@@ -303,7 +303,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 1. All 37 phrases **must** be present and correctly mapped (Spanish ↔ English) as per the table below
 2. Levels 5–8 **shall** appear locked on the Level Map until Level 4 is completed
 3. All phrases **must** work in all four gameplay modes without engine changes
-4. Phase 2 "Connection" badge **must** be awarded on completion of Level 8
+4. Phase 3 "Connection" badge **must** be awarded on completion of Level 8
 
 **Full Phrase List:**
 
@@ -355,12 +355,12 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 2 | Enter Level 5 → cycle all 8 phrases | Correct Spanish/English for all family phrases shown |
 | 3 | Shadow Challenge on Level 6 phrase "¡Vamos!" | TTS plays; mic captures; fuzzy match scores correctly |
 | 4 | Quick-Fire on Level 7 (colours) | Four colour word cards shown; audio plays the colour name; no Spanish text in prompt |
-| 5 | Complete Level 8 | Phase 2 "Connection" badge awarded; animation plays |
+| 5 | Complete Level 8 | Phase 3 "Connection" badge awarded; animation plays |
 | 6 | Regression: re-enter Level 1 | Phase 1 content and star ratings unaffected |
 
 ---
 
-## Feature 11: Phase 3 Content — Explorer (Levels 9–12, Phrases 61–100)
+## Feature 11: Phase 4 Content — Explorer (Levels 9–12, Phrases 61–100)
 
 *Added after Iteration 2 is tested and approved. Data-only addition — no engine changes.*
 
@@ -370,7 +370,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 1. All 40 phrases **must** be present and correctly mapped (Spanish ↔ English) as per the table below
 2. Levels 9–12 **shall** appear locked until Level 8 is completed
 3. All phrases **must** work in all four gameplay modes without engine changes
-4. Phase 3 "Explorer" badge **must** be awarded on completion of Level 12
+4. Phase 4 "Explorer" badge **must** be awarded on completion of Level 12
 5. Completing all 12 levels **must** trigger a special "Lingua Legend" full-completion celebration
 
 **Full Phrase List:**
@@ -426,9 +426,9 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 2 | Enter Level 9 → spot-check phrase #61 "¿Cuánto cuesta?" | Correct Spanish and English shown; TTS plays correctly |
 | 3 | Roleplay Level 10 "Buy a bus ticket" | Scenario completes on correct phrase spoken or tapped |
 | 4 | Quick-Fire Level 11 (time words) | Four time-word cards shown; audio matches phrase; no Spanish text in prompt |
-| 5 | Complete Level 12 | Phase 3 "Explorer" badge awarded |
+| 5 | Complete Level 12 | Phase 4 "Explorer" badge awarded |
 | 6 | After Level 12 completion | "Lingua Legend" full-completion celebration triggers |
-| 7 | Regression: Levels 1–8 star ratings and badges intact | No regressions introduced by Phase 3 data addition |
+| 7 | Regression: Levels 1–8 star ratings and badges intact | No regressions introduced by Phase 4 data addition |
 
 ---
 
