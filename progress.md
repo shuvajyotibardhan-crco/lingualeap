@@ -46,6 +46,10 @@
 
 ## Steps Required Before Iteration 2 Goes Live
 
+### IAM fix required first (one-time, blocks functions deploy):
+- **[IAM]**: GCP Console → IAM & Admin → IAM → project lingualeap-divel → find SA ending in `@lingualeap-divel.iam.gserviceaccount.com` → Add role: **Service Usage Consumer** → Save
+- After this, restore `--only hosting,functions` in deploy.yml (Claude will do this once you confirm IAM is fixed)
+
 ### Claude-executable (needs your secret values):
 - **T2.37+T2.38 [SECRETS]**: Add 5 GitHub Actions Secrets via gh CLI:
   - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` — Brevo SMTP values
@@ -53,11 +57,9 @@
 
 ### User manual:
 - **T2.1 [MANUAL]**: Firebase Console → upgrade lingualeap-divel to Blaze plan (required for Cloud Functions)
+- **T2.7 [MANUAL]**: Firebase Console → Firestore → Rules → paste the contactMessages rule from `firestore.rules` (lines 8–13)
 - **T2.39 [MANUAL]**: `GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node scripts/setAdminClaim.js <admin_uid>`
   - Get admin UID from Firebase Console → Authentication → find app_admin@divel.me
-
-### Still manual (service account lacks serviceusage permission — known CI limitation):
-- **T2.7 [MANUAL]**: Firebase Console → Firestore → Rules → paste the contactMessages rule from `firestore.rules` (lines 8–13)
 
 ## Next Immediate Step — Resume Instructions
 
