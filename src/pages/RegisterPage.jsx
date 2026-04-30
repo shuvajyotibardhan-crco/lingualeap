@@ -7,7 +7,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
 } from 'firebase/auth'
-import { auth } from '../lib/firebase'
+import { auth, db } from '../lib/firebase'
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 
 const FIREBASE_ERRORS = {
   'auth/email-already-in-use': 'An account with this email already exists',
@@ -43,6 +44,16 @@ export default function RegisterPage() {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password)
       await updateProfile(user, { displayName: username.trim() })
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        username: username.trim(),
+        email,
+        xp: 0,
+        levelStars: {},
+        badges: [],
+        unlockedLevels: [1],
+        lastUpdated: serverTimestamp(),
+      })
       await sendEmailVerification(user)
       setVerifyEmail(email)
     } catch (err) {

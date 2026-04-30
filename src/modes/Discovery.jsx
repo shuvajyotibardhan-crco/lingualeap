@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import PhraseCard from '../components/PhraseCard'
 import NounBank from '../components/NounBank'
+import ContactButton from '../components/ContactButton'
 
 export default function Discovery({ level, phrases, nounBankEntries, onBack }) {
   const [nounBankOpen, setNounBankOpen] = useState(false)
@@ -26,6 +27,7 @@ export default function Discovery({ level, phrases, nounBankEntries, onBack }) {
       </main>
 
       <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
+      <ContactButton />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { useProgress } from '../hooks/useProgress'
 import { useTTS } from '../hooks/useTTS'
 import RewardAnimation from '../components/RewardAnimation'
 import NounBank from '../components/NounBank'
+import ContactButton from '../components/ContactButton'
 
 const ROUND_TIME = 8 // seconds per phrase
 
@@ -152,6 +153,7 @@ export default function QuickFire({ level, phrases, nounBankEntries, onBack }) {
         )}
       </main>
       <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
+      <ContactButton />
     </div>
   )
 }

@@ -2,7 +2,17 @@ import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
 import { sendEmailVerification } from 'firebase/auth'
 import { useAuth } from '../context/AuthContext'
-import { ProgressProvider } from '../context/ProgressContext'
+import { ProgressProvider, useProgress } from '../context/ProgressContext'
+import ForcePasswordChange from './ForcePasswordChange'
+
+function ProtectedContent({ children }) {
+  const { user } = useAuth()
+  const { progress } = useProgress()
+  if (progress?.requiresPasswordChange) {
+    return <ForcePasswordChange uid={user.uid} />
+  }
+  return children
+}
 
 export default function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -25,6 +35,7 @@ export default function ProtectedRoute({ children }) {
 
   return (
     <ProgressProvider>
+      <ProtectedContent>
       {showVerifyBanner && (
         <div className="fixed top-0 inset-x-0 z-50 bg-brand-orange text-white px-4 py-3 flex items-center gap-3 shadow-md">
           <span className="text-xl">📬</span>
@@ -48,6 +59,7 @@ export default function ProtectedRoute({ children }) {
         </div>
       )}
       {children}
+      </ProtectedContent>
     </ProgressProvider>
   )
 }

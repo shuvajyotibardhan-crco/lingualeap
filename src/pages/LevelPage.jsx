@@ -4,6 +4,7 @@ import { useLevelData } from '../hooks/useLevelData'
 import { useNounBank } from '../hooks/useNounBank'
 import { useProgress } from '../hooks/useProgress'
 import NounBank from '../components/NounBank'
+import ContactButton from '../components/ContactButton'
 import Discovery from '../modes/Discovery'
 import ShadowChallenge from '../modes/ShadowChallenge'
 import Roleplay from '../modes/Roleplay'
@@ -102,6 +103,7 @@ export default function LevelPage() {
       </main>
 
       <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
+      <ContactButton />
     </div>
   )
 }

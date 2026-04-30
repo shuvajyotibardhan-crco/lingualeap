@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { initializeFirestore, persistentLocalCache } from 'firebase/firestore'
+import { getFunctions } from 'firebase/functions'
 
 const {
   VITE_FIREBASE_API_KEY: apiKey,
@@ -17,5 +18,6 @@ if (!apiKey || !projectId) {
 
 const app = initializeApp({ apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId })
 
-export const auth = getAuth(app)
-export const db   = initializeFirestore(app, { localCache: persistentLocalCache() })
+export const auth      = getAuth(app)
+export const db        = initializeFirestore(app, { localCache: persistentLocalCache() })
+export const functions = getFunctions(app)

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import ContactModal from '../components/ContactModal'
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -20,11 +21,12 @@ const googleProvider = new GoogleAuthProvider()
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [email, setEmail]       = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError]       = useState('')
-  const [resetSent, setResetSent] = useState(false)
-  const [busy, setBusy]         = useState(false)
+  const [email, setEmail]           = useState('')
+  const [password, setPassword]     = useState('')
+  const [error, setError]           = useState('')
+  const [resetSent, setResetSent]   = useState(false)
+  const [busy, setBusy]             = useState(false)
+  const [contactOpen, setContactOpen] = useState(false)
 
   function friendlyError(code) {
     return FIREBASE_ERRORS[code] ?? 'Something went wrong — please try again'
@@ -162,7 +164,17 @@ export default function LoginPage() {
             Create account
           </Link>
         </p>
+        <p className="text-center mt-3 font-display text-gray-500 text-sm">
+          <button
+            onClick={() => setContactOpen(true)}
+            className="hover:underline text-gray-500"
+          >
+            Contact Support
+          </button>
+        </p>
       </div>
+
+      <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} isLoggedIn={false} />
     </div>
   )
 }

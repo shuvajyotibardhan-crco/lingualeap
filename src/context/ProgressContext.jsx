@@ -7,7 +7,7 @@ const ProgressContext = createContext(null)
 
 export const PASS_XP               = 10
 export const FIRST_ATTEMPT_BONUS   = 5
-const PHASE_BADGE_MAP              = { 4: 'phase1', 8: 'phase2', 12: 'phase3' }
+const PHASE_BADGE_MAP              = { 4: 'phase1', 8: 'phase3', 12: 'phase4' }
 export const LEGEND_BADGE          = 'linguaLegend'
 
 const DEFAULT_PROGRESS = {
@@ -41,6 +41,7 @@ export function ProgressProvider({ children }) {
             ...DEFAULT_PROGRESS,
             uid:         user.uid,
             username:    user.displayName || '',
+            email:       user.email || '',
             lastUpdated: serverTimestamp(),
           }
           await setDoc(ref, initial)

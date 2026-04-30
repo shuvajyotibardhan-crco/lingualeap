@@ -2,8 +2,10 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useProgress } from '../hooks/useProgress'
 import LevelCard from '../components/LevelCard'
+import ContactButton from '../components/ContactButton'
 import { signOut } from 'firebase/auth'
 import { auth } from '../lib/firebase'
+import { Settings } from 'lucide-react'
 
 const LEVEL_META = [
   { level: 1,  theme: 'Greetings',       phase: 1 },
@@ -45,12 +47,19 @@ export default function LevelMap() {
             Hola, {user?.displayName || 'Explorer'} · {progress.xp ?? 0} XP
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {progress.badges?.length > 0 && (
             <span className="text-lg" title={progress.badges.join(', ')}>
               🏅×{progress.badges.length}
             </span>
           )}
+          <button
+            onClick={() => navigate('/settings')}
+            aria-label="Settings"
+            className="text-white/80 hover:text-white min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            <Settings size={20} />
+          </button>
           <button
             onClick={() => signOut(auth)}
             className="text-sm text-white/80 hover:text-white underline min-h-[44px] px-2"
@@ -81,6 +90,7 @@ export default function LevelMap() {
           </section>
         ))}
       </main>
+      <ContactButton />
     </div>
   )
 }

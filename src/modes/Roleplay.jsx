@@ -5,6 +5,7 @@ import { useASR } from '../hooks/useASR'
 import { scoreAttempt } from '../lib/fuzzy'
 import RewardAnimation from '../components/RewardAnimation'
 import NounBank from '../components/NounBank'
+import ContactButton from '../components/ContactButton'
 
 export default function Roleplay({ level, phrases, nounBankEntries, onBack }) {
   const { awardXP, completeLevel } = useProgress()
@@ -162,6 +163,7 @@ export default function Roleplay({ level, phrases, nounBankEntries, onBack }) {
         )}
       </main>
       <NounBank entries={nounBankEntries} isOpen={nounBankOpen} onClose={() => setNounBankOpen(false)} />
+      <ContactButton />
     </div>
   )
 }
