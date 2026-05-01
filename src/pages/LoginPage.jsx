@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 import ContactModal from '../components/ContactModal'
 import {
   signInWithEmailAndPassword,
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const [email, setEmail]           = useState('')
   const [password, setPassword]     = useState('')
+  const [showPw, setShowPw]         = useState(false)
   const [error, setError]           = useState('')
   const [resetSent, setResetSent]   = useState(false)
   const [busy, setBusy]             = useState(false)
@@ -104,14 +106,24 @@ export default function LoginPage() {
             </div>
             <div>
               <label className="block text-sm font-display font-bold text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange focus:outline-none font-display text-gray-800 text-base"
-              />
+              <div className="relative">
+                <input
+                  type={showPw ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 pr-11 rounded-xl border-2 border-gray-200 focus:border-brand-orange focus:outline-none font-display text-gray-800 text-base"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label={showPw ? 'Hide password' : 'Show password'}
+                >
+                  {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             {error && (
