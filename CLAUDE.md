@@ -10,6 +10,7 @@ https://github.com/shuvajyotibardhan-crco/lingualeap
 - Project ID: `lingualeap-divel`
 - Auth: Email/password + Google OAuth
 - Firestore: `users/{uid}` document per user (xp, levelStars, badges, unlockedLevels)
+- Admin account: `app_admin@divel.me` — has `admin: true` custom claim; UID in GitHub Secret ADMIN_UID
 - Hosting: https://lingualeap-divel.web.app
 - Firestore security rules managed directly in Firebase Console (not via CI — service account lacks serviceusage permission)
 

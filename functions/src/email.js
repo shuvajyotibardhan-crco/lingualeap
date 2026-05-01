@@ -9,7 +9,7 @@ async function sendEmail(to, subject, text) {
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   })
   await transporter.sendMail({
-    from: `"LinguaLeap" <${process.env.SMTP_USER}>`,
+    from: `"LinguaLeap" <${process.env.FROM_EMAIL}>`,
     to,
     subject,
     text,

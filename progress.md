@@ -46,20 +46,17 @@
 
 ## Steps Required Before Iteration 2 Goes Live
 
-### IAM fix required first (one-time, blocks functions deploy):
-- **[IAM]**: GCP Console → IAM & Admin → IAM → project lingualeap-divel → find SA ending in `@lingualeap-divel.iam.gserviceaccount.com` → Add role: **Service Usage Consumer** → Save
-- After this, restore `--only hosting,functions` in deploy.yml (Claude will do this once you confirm IAM is fixed)
+### Completed pre-deploy steps:
+- [x] IAM — Service Usage Consumer role granted on SA in GCP Console
+- [x] Firebase Blaze plan — upgraded
+- [x] 5 GitHub Secrets set — SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, ADMIN_UID
+- [x] deploy.yml — restored to hosting+functions
+- Admin account: app_admin@divel.me (UID: eit7Q3XC1ldUVPlugaiLoK3m7Ex2) — ADMIN_UID secret set ✓
 
-### Claude-executable (needs your secret values):
-- **T2.37+T2.38 [SECRETS]**: Add 5 GitHub Actions Secrets via gh CLI:
-  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` — Brevo SMTP values
-  - `ADMIN_UID` — Firebase UID of app_admin@divel.me account
-
-### User manual:
-- **T2.1 [MANUAL]**: Firebase Console → upgrade lingualeap-divel to Blaze plan (required for Cloud Functions)
+### Still required:
 - **T2.7 [MANUAL]**: Firebase Console → Firestore → Rules → paste the contactMessages rule from `firestore.rules` (lines 8–13)
-- **T2.39 [MANUAL]**: `GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node scripts/setAdminClaim.js <admin_uid>`
-  - Get admin UID from Firebase Console → Authentication → find app_admin@divel.me
+- **T2.39 [MANUAL]**: Run setAdminClaim.js to grant admin: true claim to shuvajyoti@divel.me
+  - `GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node scripts/setAdminClaim.js eit7Q3XC1ldUVPlugaiLoK3m7Ex2`
 
 ## Next Immediate Step — Resume Instructions
 
