@@ -46,6 +46,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 9. A password under 8 characters **shall** display an inline error: "Password must be at least 8 characters"
 10. Registering with an already-used email **shall** display: "An account with this email already exists"
 11. Apple Sign-In **must not** be implemented (violates zero-cost constraint)
+12. All password input fields (login, register, force-password-change overlay) **shall** include a show/hide toggle (eye icon) so users can reveal what they are typing
 
 **Test Plan:**
 
@@ -494,7 +495,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 14. The temporary password **must never** be displayed to the admin or returned to the client
 15. After reset, the user's Firestore document **must** have `requiresPasswordChange: true` set
 16. When a user with `requiresPasswordChange: true` signs in, they **must** be shown a full-screen password-change overlay that cannot be dismissed until a new password is saved
-17. Once the user sets a new password, `requiresPasswordChange` **must** be cleared from their Firestore document and the user **must** remain signed in
+17. Once the user sets a new password, `requiresPasswordChange` **must** be cleared from their Firestore document and the user **must** remain signed in; a success screen **shall** be shown with a "Continue" button before returning to the app
 
 ### Settings Tab — Update Username (admin-initiated)
 18. The admin **must** be able to enter a new display name (1–40 characters) for any selected user and save it directly (no verification step required for admin)

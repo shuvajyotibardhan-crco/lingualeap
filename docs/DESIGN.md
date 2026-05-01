@@ -156,7 +156,7 @@ Slide-up form panel (same bottom-sheet pattern as NounBank). Props: `isOpen`, `o
 Route guard for `/admin`. On mount calls `user.getIdTokenResult(true)` (force-refresh) to read Firebase custom claims. If `claims.admin !== true`, redirects to `/`. Shows a loading spinner while the token is being fetched. Wraps `AdminDashboard` in the route tree.
 
 ### `src/components/ForcePasswordChange.jsx`
-Full-screen fixed overlay (z-60, white background) that appears when `progress.requiresPasswordChange === true`. Cannot be dismissed — there is no close button. Contains a password + confirm-password form. On submit calls `updatePassword(auth.currentUser, newPassword)` from `firebase/auth`, then writes `{ requiresPasswordChange: false }` to `users/{uid}` (client write, permitted by existing rules). On success the overlay unmounts; the user remains signed in.
+Full-screen fixed overlay that appears when `progress.requiresPasswordChange === true`. Cannot be dismissed — there is no close button. Contains a password + confirm-password form, each with a show/hide eye-icon toggle. On submit calls `updatePassword(auth.currentUser, newPassword)` then `deleteField()` on `requiresPasswordChange` in Firestore. On success transitions to a success screen ("Password Updated!") with a "Continue" button that navigates to `/`; the user remains signed in.
 
 ### `src/pages/AdminDashboard.jsx`
 Main admin page at `/admin`. Sticky orange header with "Admin Dashboard" label and a link back to the Level Map. Three tab buttons (Users | Messages | Settings) switch between `UsersTab`, `MessagesTab`, and `SettingsTab` sub-components. Passes the `useCallable` hook instances down as props to avoid re-creating callable references in child tabs.
