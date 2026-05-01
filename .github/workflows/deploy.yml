@@ -50,6 +50,6 @@ jobs:
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
 
       - name: Deploy hosting + functions
-        run: firebase deploy --only hosting,functions --project ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+        run: firebase deploy --only hosting,functions --force --project ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/sa.json
