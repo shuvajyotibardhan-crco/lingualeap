@@ -414,9 +414,10 @@ Written to `functions/.env` at deploy time by CI. Accessed in functions via `pro
 |---|---|
 | `SMTP_HOST` | Brevo SMTP host (e.g. `smtp-relay.brevo.com`) |
 | `SMTP_PORT` | SMTP port (e.g. `587`) |
-| `SMTP_USER` | Brevo SMTP login (account email) |
+| `SMTP_USER` | Brevo SMTP login (the `@smtp-brevo.com` address) |
 | `SMTP_PASS` | Brevo SMTP API key / password |
 | `ADMIN_UID` | Firebase Auth UID of the admin account (`app_admin@divel.me`) |
+| `FROM_EMAIL` | Outbound email From address (e.g. `app_admin@divel.me`) — must be a verified sender in Brevo |
 
 ### ASR / TTS Constants (in `src/lib/`)
 

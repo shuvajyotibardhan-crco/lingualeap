@@ -267,7 +267,7 @@ Keeps the engine entirely language-agnostic. To add French, a developer creates 
 3. Workflow installs React app deps (`npm ci`) and Cloud Functions deps (`cd functions && npm ci`).
 4. React app is built with env vars from GitHub Actions Secrets (`VITE_FIREBASE_*`).
 5. Firebase CLI (installed in workflow) deploys Hosting (`dist/`) and Cloud Functions together via `firebase deploy --only hosting,functions`, authenticated with the `FIREBASE_SERVICE_ACCOUNT` secret.
-6. SMTP credentials (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`) and `ADMIN_UID` are stored as Firebase Function Secrets — set once via CLI, never in GitHub Secrets or source code.
+6. SMTP credentials (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`), `FROM_EMAIL`, and `ADMIN_UID` are stored as GitHub Actions Secrets and written to `functions/.env` at deploy time — never in source code.
 7. Firestore security rules are managed manually via Firebase Console (service account lacks `serviceusage.googleapis.com` permission — per CLAUDE.md constraint).
 8. Live URL: `https://lingualeap-divel.web.app`
 
