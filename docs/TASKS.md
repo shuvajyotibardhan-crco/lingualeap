@@ -487,6 +487,6 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 
 ### T5.2 — Post-Launch
 - [x] Live URL confirmed stable — GitHub Actions deploy passed in 57s; https://lingualeap-divel.web.app live
-- [ ] Check Firebase Console: Auth users, Firestore reads/writes within free tier
+- [x] Check Firebase Console: Auth users, Firestore reads/writes within free tier
 
 **T5 done when:** all docs committed and live; app stable on Firebase Hosting.
