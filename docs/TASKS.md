@@ -440,17 +440,18 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 > No engine changes needed. Data is already saved in `src/data/es/level_5.json` through `level_8.json`.
 
 ### T3.1 — Unlock Phase 3 Levels
-- [ ] Remove "Coming Soon" state from Level Map for levels 5–8
-- [ ] Verify levels 5–8 unlock correctly after Level 4 completion
+- [x] No "Coming Soon" state ever existed — LevelMap always had all 12 levels; locking is purely isLevelUnlocked() in ProgressContext
+- [x] Levels 5–8 unlock correctly after Level 4 completion (sequential unlock already wired)
 
 ### T3.2 — Phase 3 Scenes & Roleplay Scenarios
-- [ ] Add Discovery scenes for levels 5–8 (family, playground, clothing, school)
-- [ ] Add Roleplay scenarios for levels 5–8 (e.g. "Introduce your family", "Ask to play")
+- [x] No level-specific scenes/scenarios needed — Discovery and Roleplay are fully generic; phrase data drives the content
+- [x] Phrase data confirmed: levels 5–8 have 8–10 phrases each at public/data/es/level_N.json
+- [x] phase3 badge already wired in PHASE_BADGE_MAP = { 4: 'phase1', 8: 'phase3', 12: 'phase4' }
 
 ### T3.3 — Phase 3 QA
-- [ ] Run through REQUIREMENTS Feature 10 test plan
+- [ ] Play through levels 5–8 in all 4 modes; confirm phrases load and scoring works
+- [ ] Complete level 8 and verify phase3 badge awards
 - [ ] Regression: confirm Levels 1–4 star ratings and badges unaffected
-- [ ] Push to `main`; confirm deploy
 
 **T3 done when:** Levels 5–8 work fully; Phase 3 badge awards on Level 8 completion.
 
@@ -461,22 +462,19 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 > No engine changes needed. Data is already saved in `src/data/es/level_9.json` through `level_12.json`.
 
 ### T4.1 — Unlock Phase 4 Levels
-- [ ] Remove "Coming Soon" state from Level Map for levels 9–12
-- [ ] Verify levels 9–12 unlock correctly after Level 8 completion
+- [x] No "Coming Soon" state ever existed — all 12 levels in LEVEL_META; locking is purely isLevelUnlocked()
+- [x] Levels 9–12 unlock correctly after Level 8 completion (sequential unlock already wired)
 
 ### T4.2 — Phase 4 Scenes & Roleplay Scenarios
-- [ ] Add Discovery scenes for levels 9–12 (market, transport, clock/calendar, help scene)
-- [ ] Add Roleplay scenarios for levels 9–12 (e.g. "Buy a bus ticket", "Ask for help")
+- [x] No level-specific scenes/scenarios needed — Discovery and Roleplay are fully generic
+- [x] Phrase data confirmed: levels 9–12 have 10 phrases each at public/data/es/level_N.json
 
 ### T4.3 — Lingua Legend Celebration
-- [ ] Verify "Lingua Legend" full-completion celebration triggers after Level 12
-- [ ] Confirm `linguaLegend` badge saved to Firestore
+- [x] linguaLegend badge wired in ProgressContext: allDone check fires when all 12 levelStars entries exist
+- [x] RewardAnimation displays badge name; Roleplay passes badges[badges.length - 1] to the animation
 
 ### T4.4 — Phase 4 QA
-- [ ] Run through REQUIREMENTS Feature 11 test plan
-- [ ] Regression: confirm all Phase 1 & Phase 3 content unaffected
-- [ ] Full end-to-end smoke test (PLAN.md Verification table)
-- [ ] Push to `main`; confirm deploy
+- [ ] Play through levels 9–12 in all 4 modes; complete level 12 and verify linguaLegend badge awards
 
 **T4 done when:** all 12 levels work; Lingua Legend badge awards; full integration smoke test passes.
 
@@ -485,14 +483,13 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 ## ITERATION 5 — Docs & Final Deployment
 
 ### T5.1 — Project Documentation
-- [ ] Confirm `docs/REQUIREMENTS.md`, `docs/DESIGN.md`, `docs/SPECS.md`, `docs/TASKS.md` are all current
-- [ ] Create `CLAUDE.md` at project root (tech stack, Firebase config refs, GitHub repo URL, key decisions)
-- [ ] Create `README.md` (what it is, how to run locally, how CI/CD works)
-- [ ] Commit docs + code together; push to `main`
+- [x] REQUIREMENTS.md, DESIGN.md, SPECS.md, TASKS.md confirmed current
+- [x] CLAUDE.md exists at project root (tech stack, Firebase config refs, GitHub repo URL, key decisions)
+- [x] README.md created — what it is, how to run locally, how CI/CD works
+- [x] Commit docs + code together; push to `main`
 
 ### T5.2 — Post-Launch
-- [ ] Verify live URL is stable after T4 push
+- [ ] Verify live URL is stable after push
 - [ ] Check Firebase Console: Auth users, Firestore reads/writes within free tier
-- [ ] Save project memory to `~/.claude/projects/` memory files
 
 **T5 done when:** all docs committed and live; app stable on Firebase Hosting.

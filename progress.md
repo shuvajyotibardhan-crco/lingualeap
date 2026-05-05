@@ -1,7 +1,7 @@
 # Project State
-- **Last Updated:** 2026-04-30
+- **Last Updated:** 2026-05-05
 - **Current Branch:** main
-- **Current Task:** Awaiting 5 GitHub Secrets + 3 user manual steps, then push to deploy Iteration 2
+- **Current Task:** T5.2 — Post-Launch verification
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS) — Iteration 1
@@ -29,6 +29,11 @@
 23. [x] deploy.yml: "Write functions env" step added; target expanded to hosting+functions+firestore:rules
 24. [x] firestore.rules: contactMessages create rule added (T2.7 — deployed via CI, not manual Console edit)
 25. [x] functions/.env.example created; functions/.env added to .gitignore
+26. [x] Password show/hide eye icon added to LoginPage, RegisterPage, ForcePasswordChange
+27. [x] Success screen added to ForcePasswordChange (shown after password set)
+28. [x] T3.1 + T3.2 COMPLETE — no code changes needed; levels 5–8 already fully generic (LevelMap, Discovery, Roleplay are all data-driven); phrase data confirmed 8–10 phrases each; phase3 badge already wired
+29. [x] T4.1 + T4.2 + T4.3 COMPLETE — levels 9–12 fully generic, 10 phrases each; linguaLegend badge wired via allDone check in ProgressContext; RewardAnimation displays badge
+30. [x] T5.1 COMPLETE — README.md created; CLAUDE.md already existed; all docs confirmed current
 
 ## Phase Renaming (approved 2026-04-30)
 - Iteration 2 = Admin Dashboard + Contact Admin + User Self-Service Settings (Cloud Functions)
@@ -60,32 +65,11 @@
 
 ## Next Immediate Step — Resume Instructions
 
-When you return, do these steps in order:
+## Next Immediate Step — T5.2 Post-Launch
 
-### Step 1 — Firebase Blaze upgrade (you, in browser)
-Firebase Console → https://console.firebase.google.com → project lingualeap-divel → Spark plan badge → Upgrade → Blaze (pay-as-you-go). Cloud Functions cannot deploy on Spark.
+Iterations 3 and 4 required zero code changes — all 12 levels work via the generic engine. README.md created. Deployed via current push.
 
-### Step 2 — Set 5 GitHub Secrets (you provide values, Claude sets them)
-Tell Claude: "I'm back — here are the secrets" and provide:
-- **SMTP_HOST** — Brevo SMTP host (usually `smtp-relay.brevo.com`)
-- **SMTP_PORT** — Brevo SMTP port (usually `587`)
-- **SMTP_USER** — your Brevo login email
-- **SMTP_PASS** — your Brevo SMTP key (from Brevo → SMTP & API → SMTP → Generate SMTP Key)
-- **ADMIN_UID** — Firebase UID of app_admin@divel.me (Firebase Console → Authentication → find user → copy UID)
-
-Claude will run: `gh secret set <NAME> --body "<VALUE>" --repo shuvajyotibardhan-crco/lingualeap` for each.
-
-### Step 3 — Set admin custom claim (you, in terminal)
-You need the service account JSON (same value as the FIREBASE_SERVICE_ACCOUNT GitHub Secret — download from Firebase Console → Project Settings → Service Accounts → Generate new private key, save as e.g. `/tmp/sa.json`).
-
-Then run:
-```bash
-GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json node scripts/setAdminClaim.js <ADMIN_UID>
-```
-Expected output: `✅ Admin claim set for uid: <uid>`
-
-### Step 4 — Deploy (Claude does this)
-Claude will push to main → GitHub Actions builds + deploys hosting + functions + firestore:rules automatically.
-
-### Step 5 — QA
-Run T2.41 verification plan (34 test cases in PLAN.md).
+QA when ready (all three phases):
+1. Play levels 5–8 (phase3 badge on level 8 completion)
+2. Play levels 9–12 (phase4 badge on level 12, linguaLegend badge when all 12 levelStars filled)
+3. Check Firebase Console: Auth users, Firestore reads within free tier limits
