@@ -7,32 +7,32 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 ## ITERATION 0 — Project Setup & CI/CD
 
 ### T0.1 — Repo & Firebase
-- [ ] `git init` in project root; create `.gitignore` (node_modules, dist, .env, .DS_Store)
-- [ ] Create GitHub repo `lingualeap` and push initial commit
-- [ ] Create Firebase project `lingualeap` (Spark plan)
-- [ ] Enable Firebase Auth → Email/Password + Google providers
-- [ ] Enable Firestore (production mode); write security rules (see SPECS.md)
-- [ ] Copy Firebase config values into `.env`; create `.env.example` with placeholders
+- [x] `git init` in project root; create `.gitignore` (node_modules, dist, .env, .DS_Store)
+- [x] Create GitHub repo `lingualeap` and push initial commit
+- [x] Create Firebase project `lingualeap` (Spark plan)
+- [x] Enable Firebase Auth → Email/Password + Google providers
+- [x] Enable Firestore (production mode); write security rules (see SPECS.md)
+- [x] Copy Firebase config values into `.env`; create `.env.example` with placeholders
 
 ### T0.2 — Scaffold React/Vite App
-- [ ] `npm create vite@latest . -- --template react`
-- [ ] Install deps: `tailwindcss`, `postcss`, `autoprefixer`, `react-router-dom`, `firebase`, `lucide-react`, `vite-plugin-pwa`
-- [ ] Configure Tailwind (`tailwind.config.js`, `postcss.config.js`)
-- [ ] Configure Vite PWA plugin in `vite.config.js` (name, icons, theme colour, offline strategy)
-- [ ] Create `public/manifest.json` and PWA icons (192×192, 512×512)
-- [ ] Verify `npm run dev` launches without errors
+- [x] `npm create vite@latest . -- --template react`
+- [x] Install deps: `tailwindcss`, `postcss`, `autoprefixer`, `react-router-dom`, `firebase`, `lucide-react`, `vite-plugin-pwa`
+- [x] Configure Tailwind (`tailwind.config.js`, `postcss.config.js`)
+- [x] Configure Vite PWA plugin in `vite.config.js` (name, icons, theme colour, offline strategy)
+- [x] Create `public/manifest.json` and PWA icons (192×192, 512×512)
+- [x] Verify `npm run dev` launches without errors
 
 ### T0.3 — Firebase Integration
-- [ ] Create `src/lib/firebase.js` — init app, export `auth` and `db`
-- [ ] Confirm `onAuthStateChanged` fires in browser console
+- [x] Create `src/lib/firebase.js` — init app, export `auth` and `db`
+- [x] Confirm `onAuthStateChanged` fires in browser console
 
 ### T0.4 — GitHub Actions CI/CD
-- [ ] Create `.github/workflows/deploy.yml`
+- [x] Create `.github/workflows/deploy.yml`
   - Trigger: push to `main`
   - Steps: `npm ci` → `npm run build` (inject `VITE_FIREBASE_*` secrets) → Firebase Hosting deploy → Firestore rules deploy
-- [ ] Add all `VITE_FIREBASE_*` secrets + `FIREBASE_SERVICE_ACCOUNT` to GitHub repo secrets via `gh` CLI
-- [ ] Create `firebase.json` (public: dist) and `firestore.rules`
-- [ ] Push to `main` → confirm GitHub Actions run passes → confirm live URL loads
+- [x] Add all `VITE_FIREBASE_*` secrets + `FIREBASE_SERVICE_ACCOUNT` to GitHub repo secrets via `gh` CLI
+- [x] Create `firebase.json` (public: dist) and `firestore.rules`
+- [x] Push to `main` → confirm GitHub Actions run passes → confirm live URL loads
 
 **T0 done when:** live Firebase Hosting URL shows the Vite default page.
 
@@ -41,98 +41,98 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 ## ITERATION 1 — Full App + Phase 1 Content (Levels 1–4)
 
 ### T1.1 — Auth
-- [ ] Create `src/context/AuthContext.jsx` (wraps `onAuthStateChanged`; provides `{ user, loading }`)
-- [ ] Create `src/components/ProtectedRoute.jsx` (redirects to `/login` if no user)
-- [ ] Create `src/pages/RegisterPage.jsx` — username + email + password form
+- [x] Create `src/context/AuthContext.jsx` (wraps `onAuthStateChanged`; provides `{ user, loading }`)
+- [x] Create `src/components/ProtectedRoute.jsx` (redirects to `/login` if no user)
+- [x] Create `src/pages/RegisterPage.jsx` — username + email + password form
   - Inline validation: email format, password ≥8 chars, duplicate email error
   - On success: `createUserWithEmailAndPassword` + `updateProfile(displayName)`
-- [ ] Create `src/pages/LoginPage.jsx` — email sign-in + Google OAuth button
+- [x] Create `src/pages/LoginPage.jsx` — email sign-in + Google OAuth button
   - Google: `signInWithPopup(auth, googleProvider)`
   - Forgot password: `sendPasswordResetEmail`
-- [ ] Wire routes in `src/App.jsx`: `/login`, `/register`, `/` (protected)
-- [ ] Test all auth acceptance criteria (REQUIREMENTS Feature 1)
+- [x] Wire routes in `src/App.jsx`: `/login`, `/register`, `/` (protected)
+- [x] Test all auth acceptance criteria (REQUIREMENTS Feature 1)
 
 ### T1.2 — Progress Context & Firestore
-- [ ] Create `src/context/ProgressContext.jsx`
+- [x] Create `src/context/ProgressContext.jsx`
   - On auth: read `users/{uid}` from Firestore (create doc if new user, seed `unlockedLevels: [1]`, `xp: 0`)
   - Expose: `progress`, `awardXP(wasFirstAttempt)`, `saveStars(level, stars)`, `saveBadge(badge)`, `isLevelUnlocked(level)`
-- [ ] Create `src/hooks/useProgress.js` (re-exports context)
-- [ ] Enable Firestore offline persistence (`enableIndexedDbPersistence`)
-- [ ] Verify Firestore doc created on first login; verify offline write queuing
+- [x] Create `src/hooks/useProgress.js` (re-exports context)
+- [x] Enable Firestore offline persistence (`enableIndexedDbPersistence`)
+- [x] Verify Firestore doc created on first login; verify offline write queuing
 
 ### T1.3 — Curriculum Engine
-- [ ] Create `src/hooks/useLevelData.js` — fetches `/src/data/{lang}/level_{n}.json`, returns `{ phrases, loading }`
-- [ ] Confirm `level_1.json` through `level_4.json` load correctly (already created)
-- [ ] Implement level lock guard in router: direct URL to locked level → redirect to Level Map
+- [x] Create `src/hooks/useLevelData.js` — fetches `/src/data/{lang}/level_{n}.json`, returns `{ phrases, loading }`
+- [x] Confirm `level_1.json` through `level_4.json` load correctly (already created)
+- [x] Implement level lock guard in router: direct URL to locked level → redirect to Level Map
 
 ### T1.4 — TTS
-- [ ] Create `src/lib/tts.js` — `speak(text, lang)`, `selectVoice(lang)` (see SPECS.md algorithm)
-- [ ] Create `src/hooks/useTTS.js` — returns `{ speak, isSpeaking }`
-- [ ] Test: Spanish voice selected when available; default fallback when not; no network call; cancels previous utterance
+- [x] Create `src/lib/tts.js` — `speak(text, lang)`, `selectVoice(lang)` (see SPECS.md algorithm)
+- [x] Create `src/hooks/useTTS.js` — returns `{ speak, isSpeaking }`
+- [x] Test: Spanish voice selected when available; default fallback when not; no network call; cancels previous utterance
 
 ### T1.5 — ASR
-- [ ] Create `src/lib/asr.js` — `startListening(lang, onResult, onError)`, `stopListening()`; returns null when unsupported
-- [ ] Create `src/lib/fuzzy.js` — `normalise(str)`, `levenshtein(a, b)`, `similarity(a, b)`; `PASS_THRESHOLD = 0.60`
-- [ ] Create `src/hooks/useASR.js` — returns `{ startListening, stopListening, transcript, isListening, isSupported }`
-- [ ] Test: wave animation on listening; pass/retry logic; zero outbound network requests; Firefox fallback
+- [x] Create `src/lib/asr.js` — `startListening(lang, onResult, onError)`, `stopListening()`; returns null when unsupported
+- [x] Create `src/lib/fuzzy.js` — `normalise(str)`, `levenshtein(a, b)`, `similarity(a, b)`; `PASS_THRESHOLD = 0.60`
+- [x] Create `src/hooks/useASR.js` — returns `{ startListening, stopListening, transcript, isListening, isSupported }`
+- [x] Test: wave animation on listening; pass/retry logic; zero outbound network requests; Firefox fallback
 
 ### T1.6 — XP & Rewards Logic
-- [ ] Create `src/lib/xp.js` — constants `PASS_XP = 10`, `FIRST_ATTEMPT_BONUS_XP = 5`
-- [ ] Implement `calculateStars(phrases, firstAttemptPasses)` in ProgressContext
-- [ ] Implement badge award logic (phase1 on level 4, phase2 on level 8, phase3 on level 12, linguaLegend on all 12)
-- [ ] Create `src/components/RewardAnimation.jsx` — plays on level complete; auto-dismisses after 2s
+- [x] Create `src/lib/xp.js` — constants `PASS_XP = 10`, `FIRST_ATTEMPT_BONUS_XP = 5`
+- [x] Implement `calculateStars(phrases, firstAttemptPasses)` in ProgressContext
+- [x] Implement badge award logic (phase1 on level 4, phase2 on level 8, phase3 on level 12, linguaLegend on all 12)
+- [x] Create `src/components/RewardAnimation.jsx` — plays on level complete; auto-dismisses after 2s
 
 ### T1.7 — UI Components
-- [ ] Create `src/components/PhraseCard.jsx` — Spanish text, English translation, TTS button (44px min)
-- [ ] Create `src/components/LevelCard.jsx` — locked/unlocked/completed states, star display
-- [ ] Create `src/components/NounBank.jsx` — slide-up panel, category tiles, TTS on tap
-- [ ] Apply Tailwind: bright palette, WCAG AA contrast, 44px touch targets throughout
+- [x] Create `src/components/PhraseCard.jsx` — Spanish text, English translation, TTS button (44px min)
+- [x] Create `src/components/LevelCard.jsx` — locked/unlocked/completed states, star display
+- [x] Create `src/components/NounBank.jsx` — slide-up panel, category tiles, TTS on tap
+- [x] Apply Tailwind: bright palette, WCAG AA contrast, 44px touch targets throughout
 
 ### T1.8 — Level Map
-- [ ] Create `src/pages/LevelMap.jsx`
+- [x] Create `src/pages/LevelMap.jsx`
   - 12-level grid (Levels 5–12 always visible but locked until Phase 3/4 data is added — show as "Coming Soon")
   - XP total in header at all times
   - Reads unlock state from ProgressContext
 
 ### T1.9 — Level Page & Mode Selector
-- [ ] Create `src/pages/LevelPage.jsx` — loads level JSON, renders mode selector (4 modes)
-- [ ] Wire route `/level/:id` in App.jsx
+- [x] Create `src/pages/LevelPage.jsx` — loads level JSON, renders mode selector (4 modes)
+- [x] Wire route `/level/:id` in App.jsx
 
 ### T1.10 — Discovery Mode
-- [ ] Create `src/modes/Discovery.jsx`
+- [x] Create `src/modes/Discovery.jsx`
   - Illustrated scene (unDraw SVG); tappable objects call `speak(spanishWord)`
   - No scoring; purely exploratory
-- [ ] One scene per level 1–4; use placeholder SVG if custom scene not ready
+- [x] One scene per level 1–4; use placeholder SVG if custom scene not ready
 
 ### T1.11 — Shadow Challenge Mode
-- [ ] Create `src/modes/ShadowChallenge.jsx`
+- [x] Create `src/modes/ShadowChallenge.jsx`
   - Play TTS → show mic button → `startListening` → fuzzy score → pass/retry
   - Listening wave animation (CSS)
   - Pass: XP award + green animation; Retry: "Try again!" only (no negative language)
   - ASR unavailable: tap-to-select fallback (show 2 options: correct + one distractor)
 
 ### T1.12 — Roleplay Mode
-- [ ] Create `src/modes/Roleplay.jsx`
+- [x] Create `src/modes/Roleplay.jsx`
   - One scenario per level 1–4 (e.g. "Greet someone", "Order at the café")
   - Goal text shown; tap correct phrase from options to advance
   - XP per step; RewardAnimation on completion
 
 ### T1.13 — Quick-Fire Mode
-- [ ] Create `src/modes/QuickFire.jsx`
+- [x] Create `src/modes/QuickFire.jsx`
   - Auto-play TTS on load; 4 image options; countdown timer (10s)
   - Correct: XP + next phrase; Wrong/timeout: "Try again!" + replay audio
   - Images: unDraw illustrations or emoji fallback for MVP
 
 ### T1.14 — PWA & Offline
-- [ ] Verify service worker registers and caches assets on first load
-- [ ] Test airplane mode: app loads, TTS works, XP queues and syncs on reconnect
-- [ ] Test "Add to Home Screen" on Chrome mobile
+- [x] Verify service worker registers and caches assets on first load
+- [x] Test airplane mode: app loads, TTS works, XP queues and syncs on reconnect
+- [x] Test "Add to Home Screen" on Chrome mobile
 
 ### T1.15 — Iteration 1 QA
-- [ ] Run through every acceptance criterion in REQUIREMENTS Features 1–9
-- [ ] Lighthouse audit: Performance ≥80, Accessibility ≥90, PWA ✓
-- [ ] Test on: Chrome desktop, Chrome mobile (375px), Safari iOS, Firefox
-- [ ] Fix all blockers; push to `main`; confirm deploy succeeds
+- [x] Run through every acceptance criterion in REQUIREMENTS Features 1–9
+- [x] Lighthouse audit: Performance ≥80, Accessibility ≥90, PWA ✓
+- [x] Test on: Chrome desktop, Chrome mobile (375px), Safari iOS, Firefox
+- [x] Fix all blockers; push to `main`; confirm deploy succeeds
 
 **T1 done when:** full app works end-to-end on live URL with Phase 1 content; all Feature 1–9 test plans pass.
 
@@ -395,15 +395,12 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
   3. `GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json firebase deploy --only hosting,functions --project $PROJECT_ID`
 - Commit: `ci: add Cloud Functions deploy step to GitHub Actions`
 
-#### T2.37 — Set SMTP secrets **[MANUAL]**
-- Run: `firebase functions:secrets:set SMTP_HOST`, then `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`
-- Enter Brevo SMTP values at each prompt
-- No code commit; note in progress.md
+#### T2.37 — Set SMTP secrets **[SUPERSEDED]**
+- ~~firebase functions:secrets:set approach~~ — replaced by GitHub Secrets + `functions/.env` written by CI
+- SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, FROM_EMAIL all set as GitHub Actions Secrets ✓
 
-#### T2.38 — Set admin UID environment config **[MANUAL]**
-- Run: `firebase functions:config:set admin.uid=<uid_of_app_admin_account>`
-- Note: `process.env.ADMIN_UID` is read inside functions via `functions.config().admin.uid`
-- No code commit; note in progress.md
+#### T2.38 — Set admin UID environment config **[SUPERSEDED]**
+- ~~firebase functions:config:set approach~~ — replaced by ADMIN_UID GitHub Secret + `functions/.env` written by CI ✓
 
 #### T2.39 — Set admin custom claim **[MANUAL, one-time]**
 - Create `scripts/setAdminClaim.js`:
@@ -427,9 +424,9 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 - Commit: `docs: update PLAN and progress for Iteration 2`
 
 #### T2.41 — End-to-end QA
-- Run every row of the Verification Plan table in PLAN.md (34 test cases)
-- Fix any blockers; push to `main`; confirm deploy succeeds
-- Commit any fixes with accompanying doc updates
+- [ ] Run every row of the Verification Plan table in PLAN.md (34 test cases)
+- [ ] Fix any blockers; push to `main`; confirm deploy succeeds
+- [ ] Commit any fixes with accompanying doc updates
 
 **T2 done when:** all 34 verification plan test cases pass on live URL; admin dashboard fully functional; contact form works pre- and post-login; user self-service settings work; ForcePasswordChange overlay works.
 

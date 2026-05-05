@@ -66,3 +66,8 @@ Scan every AC for non-compliant language and fix before committing.
 ### Progress Tracking
 - `progress.md` at project root tracks current task, completed actions, logic context, and next step
 - Update `progress.md` after every completed task — never let it lag
+
+### Task Completion — MANDATORY
+- Mark every task AND subtask `[x]` in `docs/TASKS.md` the moment it is completed — not at session end, not at iteration end, but immediately.
+- Never leave a completed item as `[ ]`. Superseded tasks get `**[SUPERSEDED]**` with a note.
+- At session start: scan `docs/TASKS.md` for any `[ ]` items already done in prior sessions and fix them before proceeding.
