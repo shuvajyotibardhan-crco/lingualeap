@@ -1,7 +1,7 @@
 # Project State
 - **Last Updated:** 2026-05-07
 - **Current Branch:** main
-- **Current Task:** Admin dashboard enhancements — deployed
+- **Current Task:** Progress Reset feature — implementation in progress
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS) — Iteration 1
@@ -53,5 +53,26 @@
 - **Firebase Console → Storage → Rules**: paste contents of `storage.rules` (admin-only; enables proof uploads)
 - **Firebase Console → Firestore → Rules**: paste updated contents of `firestore.rules` (adds adminActions read-only rule)
 
+## Progress Reset Feature — Plan (implementation pending)
+
+### What to build
+- **CF-10 `adminResetProgress`** — admin callable; resets any user's progress to phase 1/2/3; requires proofUrl; writes audit log
+- **CF-11 `initiateProgressReset`** — self callable; stores pendingProgressReset token; emails verification link
+- **CF-12 `verifyProgressReset`** — token-auth callable; validates token, executes reset, clears pending
+- **SettingsTab** — new "Reset Progress" panel (user search + phase selector + proof upload)
+- **UserSettings** — new "Reset Progress" section (phase selector + initiate email → verify page)
+- **VerifyProgressResetPage** — `/verify-progress-reset?token=&uid=`; calls CF-12; full page reload on success
+
+### Reset logic (shared between CF-10 and CF-12)
+- Phase 1 → clear levels 1–12; xp=0; unlockedLevels=[1]; remove all badges
+- Phase 2 → clear levels 5–12; subtract XP for 5–12; keep unlocked 1–4 + add 5; remove phase3/phase4/linguaLegend
+- Phase 3 → clear levels 9–12; subtract XP for 9–12; keep unlocked 1–8 + add 9; remove phase4/linguaLegend
+- XP: stars 2/3 → 15 XP, stars 1 → 10 XP; clamp to ≥0
+- Proof storage path: admin-proofs/resetProgress/{targetUid}/{adminUid}_{ts}.pdf
+
+### Pending manual Firebase Console updates (still required)
+- Storage → Rules: paste storage.rules
+- Firestore → Rules: paste firestore.rules (with admin read on users collection)
+
 ## Next Immediate Step
-All code deployed and live. Two manual Firebase Console rule updates required (above) before proof uploads and audit reads work end-to-end.
+Implement CF-10, CF-11, CF-12, SettingsTab Reset Progress panel, UserSettings Reset Progress section, VerifyProgressResetPage, App.jsx route, then commit + push.

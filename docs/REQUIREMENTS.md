@@ -524,10 +524,21 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 28. All user management operations in the Settings tab **must** require the caller to hold the `admin: true` custom claim, validated server-side in the Cloud Function
 
 ### Audit Trail
-29. Every admin-initiated action (password reset, username update, email change initiation, contact reply) **must** create an immutable audit log entry in the `adminActions` Firestore collection via the Admin SDK
+29. Every admin-initiated action (password reset, username update, email change initiation, contact reply, progress reset) **must** create an immutable audit log entry in the `adminActions` Firestore collection via the Admin SDK
 30. Each audit entry **must** record: `action`, `adminUid`, `targetUid`, `targetEmail`, `targetUsername`, `proofUrl` (null for contact replies), `details` (action-specific data), and `performedAt` timestamp
 31. The `adminActions` collection **must** only be readable by users whose Firebase ID token contains `admin: true`; client-side writes **must** be denied
 32. Audit entries **must** be written server-side only (via Admin SDK in Cloud Functions) and **must never** be writable from the client
+
+### Settings Tab — Reset Progress (admin-initiated)
+33. The admin **must** be able to search for any user (min-3-char wildcard, same as other panels), select them, choose a phase to reset to (Phase 1, 2, or 3), upload a supporting proof PDF, and submit
+34. "Reset to Phase N" **must** clear all level data for Phase N and all subsequent phases; data for phases before N **must** remain untouched
+35. Exact clearing rules:
+    - Reset to Phase 1: **must** delete all `levelStars` (levels 1–12), remove all badges (`phase1`, `phase3`, `phase4`, `linguaLegend`), set `xp` to 0, set `unlockedLevels` to `[1]`
+    - Reset to Phase 2: **must** delete `levelStars` for levels 5–12, remove badges `phase3`, `phase4`, `linguaLegend`, subtract XP earned in levels 5–12, keep `unlockedLevels` for 1–4 and ensure level 5 is present
+    - Reset to Phase 3: **must** delete `levelStars` for levels 9–12, remove badges `phase4`, `linguaLegend`, subtract XP earned in levels 9–12, keep `unlockedLevels` for 1–8 and ensure level 9 is present
+36. XP subtraction **must** be calculated from the affected levels' stored star values: stars 2 or 3 → 15 XP per level; stars 1 → 10 XP per level; XP **must** never go below 0
+37. A supporting proof PDF **must** be required before submission (same rules as ACs 10b–10f)
+38. The reset **must** execute immediately server-side via Admin SDK with no email verification step; an audit entry **must** be written with `action = 'resetProgress'` and `details: { resetToPhase }`
 
 **Test Plan:**
 
@@ -550,6 +561,9 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 14 | User clicks verification link | `/verify-email-change` page loads; success message shown; user can now sign in with new email |
 | 15 | Use a verification link after 24 hours | "Link expired" error shown; pending change removed from Firestore |
 | 16 | Use an invalid token in the verification URL | "Invalid link" error shown |
+| 17 | Settings tab: attempt to reset progress without uploading PDF | Submit button remains disabled |
+| 18 | Settings tab: reset user to Phase 2 with valid proof | Levels 5–12 cleared; Phase 2/3 badges removed; XP reduced; level 5 stays unlocked; audit entry written |
+| 19 | Settings tab: reset user to Phase 1 with valid proof | All progress cleared; XP = 0; only level 1 unlocked; all badges removed |
 
 ---
 
@@ -587,6 +601,17 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 19. The verification flow **must** use the same `/verify-email-change` page and token mechanism as Feature 13 (ACs 22–27)
 20. A user **must not** be able to initiate a new email change while a previous change is still pending
 
+### Self-Service Progress Reset
+21. The Settings page **must** provide a "Reset progress" option with a phase selector (Phase 1, 2, or 3)
+22. Before the user can submit, a clear warning **must** be displayed stating exactly which levels, XP, and badges will be removed for the chosen phase
+23. Submitting the reset request **must** send a verification email to the user's registered address containing a secure time-limited link valid for 24 hours; no data is changed until the link is clicked
+24. The verification email link **must** point to `/verify-progress-reset?token=...&uid=...` in the app
+25. On that page, after token validation, the progress reset **must** execute immediately server-side using the same clearing rules as AC 35 in Feature 13
+26. After a successful reset, the user's progress **must** be reloaded from Firestore and the user **must** be redirected to the Level Map
+27. A verification link older than 24 hours **must** be rejected with a "Link expired" error; the pending reset **must** be removed from Firestore
+28. An invalid or already-used token **must** be rejected with an "Invalid link" error
+29. A user **must not** be able to initiate a new progress reset while a previous one is still pending
+
 **Test Plan:**
 
 | # | Step | Expected Result |
@@ -604,3 +629,7 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 11 | Settings → "Change login email" → enter new email → submit | Verification email sent to current email address |
 | 12 | Click link in current-email verification | `/verify-email-change` page loads; success shown; confirmation sent to new email |
 | 13 | Try to initiate another email change while one is pending | Error message: a change is already pending |
+| 14 | Settings → "Reset progress" → select Phase 2 → submit | Verification email sent to registered address |
+| 15 | Click verification link | `/verify-progress-reset` loads; levels 5–12 cleared; redirected to Level Map |
+| 16 | Use reset-progress link after 24 hours | "Link expired" error; pending reset removed from Firestore |
+| 17 | Try to initiate a new reset while one is pending | Error shown: a reset is already pending |

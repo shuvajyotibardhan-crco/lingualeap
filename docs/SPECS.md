@@ -122,6 +122,7 @@ users/
     requiresPasswordChange: boolean          // OPTIONAL — present only after password reset
     pendingEmailChange:     map             // OPTIONAL — { newEmail, token, requestedAt }
     pendingUsernameChange:  map             // OPTIONAL — { token, requestedAt }
+    pendingProgressReset:   map             // OPTIONAL — { resetToPhase: number, token, requestedAt }
 ```
 
 **Security rules (summary):**
@@ -162,7 +163,8 @@ adminActions/
     targetEmail:    string | null
     targetUsername: string | null
     proofUrl:       string | null   // Firebase Storage download URL; null for replyToContact
-    details:        map             // action-specific fields
+    details:        map             // action-specific fields:
+                                   //   resetProgress: { resetToPhase: number }
     performedAt:    timestamp
 ```
 
@@ -310,9 +312,85 @@ All callable functions are invoked client-side via `httpsCallable(getFunctions(a
   5. Firestore: set `username: newUsername`, delete `pendingUsernameChange`, set `lastUpdated: serverTimestamp()`
 - **Returns:** `{ success: true }`
 
+### CF-10: `adminResetProgress`
+- **Type:** callable (admin only)
+- **Input:** `{ targetUid: string, resetToPhase: 1|2|3, proofUrl: string }`
+- **Logic:**
+  1. `assertAdmin(request)`; validate `resetToPhase` ∈ {1,2,3}; require `proofUrl`
+  2. Read `users/{targetUid}` to get current `levelStars`, `xp`, `unlockedLevels`, `badges`
+  3. Determine `levelsToReset` and `entryLevel` from phase map (see algorithm below)
+  4. Calculate `xpToSubtract` from affected levels' star values
+  5. Build Firestore update: delete `levelStars.{N}` for each affected level; filter `unlockedLevels` and `badges`; clamp new `xp` ≥ 0
+  6. `admin.firestore().collection('users').doc(targetUid).update(updateData)`
+  7. `writeAuditLog({ action: 'resetProgress', ..., details: { resetToPhase }, proofUrl })`
+- **Returns:** `{ success: true }`
+
+### CF-11: `initiateProgressReset`
+- **Type:** callable (self only — `request.auth.uid` must equal `targetUid`)
+- **Input:** `{ targetUid: string, resetToPhase: 1|2|3 }`
+- **Logic:**
+  1. Auth check; validate `resetToPhase`
+  2. Read `users/{targetUid}`; if `pendingProgressReset` exists → throw `failed-precondition`
+  3. `generateToken()` → store `pendingProgressReset: { resetToPhase, token, requestedAt }` in Firestore
+  4. Email link: `{APP_URL}/verify-progress-reset?token={token}&uid={targetUid}`
+  5. Send to user's registered email
+- **Returns:** `{ success: true }`
+
+### CF-12: `verifyProgressReset`
+- **Type:** callable (open — token is the authenticator)
+- **Input:** `{ uid: string, token: string }`
+- **Logic:**
+  1. Read `users/{uid}`, check `pendingProgressReset` exists
+  2. Constant-time token comparison
+  3. Check `requestedAt` < 24h; if expired: delete `pendingProgressReset`, throw `deadline-exceeded`
+  4. Execute phase reset using same logic as CF-10 (shared helper), `resetToPhase` from the stored pending doc
+  5. Firestore: delete `pendingProgressReset`
+- **Returns:** `{ success: true }`
+
 ---
 
 ## Algorithms
+
+### Progress Reset Logic
+```
+PHASE_LEVELS = {
+  1: [1..12],   // reset to phase 1 clears everything
+  2: [5..12],   // reset to phase 2 clears phases 2+3
+  3: [9..12],   // reset to phase 3 clears phase 3 only
+}
+PHASE_ENTRY  = { 1: 1, 2: 5, 3: 9 }   // first level to keep unlocked
+BADGES_REMOVE = {
+  1: [phase1, phase3, phase4, linguaLegend],
+  2: [phase3, phase4, linguaLegend],
+  3: [phase4, linguaLegend],
+}
+
+function executeReset(userDoc, resetToPhase):
+  levels  = PHASE_LEVELS[resetToPhase]
+  entry   = PHASE_ENTRY[resetToPhase]
+
+  xpToSubtract = sum over levels:
+    stars = userDoc.levelStars[level] ?? 0
+    if stars >= 2: 15
+    elif stars == 1: 10
+    else: 0
+
+  update = {}
+  for level in levels:
+    update['levelStars.' + level] = FieldValue.delete()
+
+  newUnlocked = userDoc.unlockedLevels
+    .filter(l => l NOT IN levels OR l == entry)
+    .union([entry])          // ensure entry level is present
+
+  newBadges = userDoc.badges.filter(b => b NOT IN BADGES_REMOVE[resetToPhase])
+  newXp     = max(0, userDoc.xp - xpToSubtract)
+
+  update.unlockedLevels = newUnlocked
+  update.badges         = newBadges
+  update.xp             = newXp
+  return update
+```
 
 ### Level Unlock Logic
 ```
@@ -504,8 +582,11 @@ Language Learning App/
 │       ├── adminUpdateUsername.js  # CF-4: admin callable — direct username update + email notify
 │       ├── initiateEmailChange.js  # CF-5: self/admin callable — token + verification email to current address
 │       ├── verifyEmailChange.js    # CF-6: token-auth callable — validates, updates Auth email
-│       ├── initiateUsernameChange.js # CF-7: self callable — token + verification email
-│       └── verifyUsernameChange.js # CF-8: token-auth callable — validates, updates username
+│       ├── initiateUsernameChange.js   # CF-7: self callable — token + verification email
+│       ├── verifyUsernameChange.js     # CF-8: token-auth callable — validates, updates username
+│       ├── adminResetProgress.js       # CF-10: admin callable — direct phase reset, requires proofUrl, audit log
+│       ├── initiateProgressReset.js    # CF-11: self callable — token + verification email
+│       └── verifyProgressReset.js      # CF-12: token-auth callable — validates, executes phase reset
 ├── public/
 │   ├── favicon.ico
 │   ├── manifest.json               # PWA manifest
@@ -554,7 +635,7 @@ Language Learning App/
 │   ├── admin/                      # NEW — admin dashboard sub-components
 │   │   ├── UsersTab.jsx            # getDocs(users), min-3-char wildcard filter, expandable rows
 │   │   ├── MessagesTab.jsx         # contactMessages grouped open/resolved, reply form → CF-2
-│   │   └── SettingsTab.jsx         # min-3-char UserSearch + ProofUpload + 3 action panels → CF-3, CF-4, CF-5
+│   │   └── SettingsTab.jsx         # min-3-char UserSearch + ProofUpload + 4 action panels → CF-3, CF-4, CF-5, CF-10
 │   ├── modes/
 │   │   ├── Discovery.jsx           # Tap objects → TTS; no scoring
 │   │   ├── ShadowChallenge.jsx     # TTS → mic → fuzzy score → pass/retry
@@ -567,8 +648,9 @@ Language Learning App/
 │   │   ├── LevelPage.jsx           # Mode selector + phrase loader for a given level
 │   │   ├── AdminDashboard.jsx      # NEW — /admin; tab shell (Users | Messages | Settings)
 │   │   ├── UserSettings.jsx        # NEW — /settings; self-service account management
-│   │   ├── VerifyEmailChangePage.jsx    # NEW — /verify-email-change; reads token, calls CF-6
-│   │   └── VerifyUsernameChangePage.jsx # NEW — /verify-username-change; reads token, calls CF-8
+│   │   ├── VerifyEmailChangePage.jsx      # /verify-email-change; reads token, calls CF-6
+│   │   ├── VerifyUsernameChangePage.jsx   # /verify-username-change; reads token, calls CF-8
+│   │   └── VerifyProgressResetPage.jsx    # /verify-progress-reset; reads token, calls CF-12; full reload on success
 │   ├── App.jsx                     # React Router routes; wraps AuthContext + ProgressContext
 │   └── main.jsx                    # Vite entry point; mounts <App />
 ├── scripts/

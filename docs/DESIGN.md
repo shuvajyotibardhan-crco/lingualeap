@@ -162,7 +162,10 @@ Full-screen fixed overlay that appears when `progress.requiresPasswordChange ===
 Main admin page at `/admin`. Sticky orange header with "Admin Dashboard" label and a link back to the Level Map. Three tab buttons (Users | Messages | Settings) switch between `UsersTab`, `MessagesTab`, and `SettingsTab` sub-components. Passes the `useCallable` hook instances down as props to avoid re-creating callable references in child tabs.
 
 ### `src/pages/UserSettings.jsx`
-Settings page at `/settings`, protected by `ProtectedRoute`. Accessible via a gear icon in the LevelMap header. Displays three action sections: Reset Password, Change Username, Change Email. Each section has a button that triggers the appropriate Cloud Function via `useCallable`. Reset Password shows a confirmation dialog before proceeding and signs the user out on success. Change Username shows a "send verification email" button with a success banner after dispatch. Change Email shows an email input field; dispatching the change while a `pendingEmailChange` exists in Firestore shows an inline "a change is already pending" error.
+Settings page at `/settings`, protected by `ProtectedRoute`. Accessible via a gear icon in the LevelMap header. Displays four action sections: Reset Password, Change Username, Change Email, Reset Progress. Each section has a button that triggers the appropriate Cloud Function via `useCallable`. Reset Password shows a confirmation dialog before proceeding and signs the user out on success. Change Username and Change Email both send a verification email and show a success banner after dispatch. Reset Progress shows a phase selector (1/2/3) with a dynamic warning, then calls `initiateProgressReset` to send a verification email; the actual reset happens only after the user clicks the link.
+
+### `src/pages/VerifyProgressResetPage.jsx`
+Public page at `/verify-progress-reset`. Reads `token` and `uid` from query params. On mount calls `verifyProgressReset` Cloud Function, which validates the token and executes the reset server-side. Shows a loading spinner, then either a success message ("Progress reset — redirecting…") before navigating to `/` via `window.location.href` (forces a full reload so ProgressContext re-reads Firestore), or an error (expired / invalid token).
 
 ### `src/pages/VerifyEmailChangePage.jsx`
 Public page at `/verify-email-change`. Reads `token` and `uid` query parameters via `useSearchParams`. On mount calls `verifyEmailChange` Cloud Function. Shows a loading spinner, then either a success message (displaying the new email address) or an error message (expired / invalid token). Includes a "Go to Sign In" button.
@@ -177,7 +180,7 @@ Queries `users` collection via `getDocs` on mount. Renders a search input that f
 Queries `contactMessages` collection ordered by `createdAt` descending. Groups documents into "Open" and "Resolved" sections. Each message card is expandable to show full text and the reply thread. An inline reply form (textarea + Send button) calls the `adminReplyToContact` Cloud Function via `useCallable`. Shows a loading indicator per card during send.
 
 ### `src/admin/SettingsTab.jsx`
-Contains a reusable `UserSearch` component (min-3-char wildcard, explicit Search button) and a `ProofUpload` component. Three action panels (Reset Password, Update Username, Update Login Email) share this pattern: select a user → enter action details → upload a PDF proof to Firebase Storage → submit is enabled only once the proof URL is set. Each panel passes `proofUrl` to its Cloud Function callable. All panels show loading, success, and error states independently.
+Contains a reusable `UserSearch` component (min-3-char wildcard, explicit Search button) and a `ProofUpload` component. Four action panels (Reset Password, Update Username, Update Login Email, Reset Progress) share this pattern: select a user → enter action details → upload a PDF proof to Firebase Storage → submit is enabled only once the proof URL is set. Each panel passes `proofUrl` to its Cloud Function callable. The Reset Progress panel adds a phase selector (1/2/3) with a dynamic warning showing exactly which levels and badges will be cleared. All panels show loading, success, and error states independently.
 
 ### `src/admin/ProofUpload` (inline component in SettingsTab.jsx)
 Accepts `action`, `targetUid`, and `onUploaded` props. Validates the selected file is a PDF ≤10 MB, then uploads it via `uploadBytesResumable` to `admin-proofs/{action}/{targetUid}/{adminUid}_{timestamp}.pdf`. Shows an upload-progress bar during the transfer and a green success state (with a remove option) on completion. Calls `onUploaded(url)` with the Firebase Storage download URL.
@@ -196,7 +199,7 @@ Shared utilities for Cloud Functions. Exports:
 - `generateToken()` — `crypto.randomBytes(32).toString('hex')` (64 hex chars, 256 bits)
 - `writeAuditLog({ adminUid, action, targetUid, targetEmail, targetUsername, proofUrl, details })` — writes an immutable document to the `adminActions` Firestore collection via Admin SDK. Called by all four admin-action functions after successful execution.
 
-### `functions/index.js` — Cloud Functions (9 total)
+### `functions/index.js` — Cloud Functions (12 total)
 
 | Function | Type | Caller | Purpose |
 |---|---|---|---|
@@ -209,6 +212,9 @@ Shared utilities for Cloud Functions. Exports:
 | `verifyEmailChange` | callable | token-auth | Validates token, updates email in Auth, clears pending state, emails new address |
 | `initiateUsernameChange` | callable | self only | Stores `pendingUsernameChange` token in Firestore, emails verification link to user |
 | `verifyUsernameChange` | callable | token-auth | Validates token, accepts new username in payload, updates Auth displayName + Firestore |
+| `adminResetProgress` | callable | admin only | Immediately clears level data for chosen phase and all later phases; adjusts XP and badges; requires `proofUrl`; writes audit log |
+| `initiateProgressReset` | callable | self only | Validates no pending reset exists; stores `pendingProgressReset` token in Firestore; emails verification link to user |
+| `verifyProgressReset` | callable | token-auth | Validates token; executes the phase reset (same logic as adminResetProgress); clears pending state |
 
 ### `.github/workflows/deploy.yml`
 GitHub Actions workflow: triggers on push to `main`, installs deps (including `functions/` Node deps), builds the React app with env vars from GitHub Secrets, then deploys both Firebase Hosting and Cloud Functions via the Firebase CLI authenticated with the service account secret. Firestore and Firebase Storage security rules are managed directly in the Firebase Console (the service account lacks the Service Usage permissions required for `firebase-tools` rules deployment). `storage.rules` and `firestore.rules` are kept in the repo as the source of truth and must be pasted into the respective Console editors after any rule change.
