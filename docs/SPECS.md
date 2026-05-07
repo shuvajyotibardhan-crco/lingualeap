@@ -519,7 +519,7 @@ Language Learning App/
 │   ├── App.jsx                     # React Router routes; wraps AuthContext + ProgressContext
 │   └── main.jsx                    # Vite entry point; mounts <App />
 ├── scripts/
-│   └── setAdminClaim.js            # One-time script: sets admin custom claim on app_admin@divel.me UID
+│   └── setAdminClaim.cjs           # One-time script: sets admin custom claim on app_admin@divel.me UID
 ├── docs/
 │   ├── PLAN.md
 │   ├── REQUIREMENTS.md
