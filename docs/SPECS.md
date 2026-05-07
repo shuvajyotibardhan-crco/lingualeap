@@ -474,7 +474,7 @@ Language Learning App/
 │           └── noun_bank.json      # 1,373 Traveller's Noun Bank words across 12 categories
 ├── src/
 │   ├── context/
-│   │   ├── AuthContext.jsx         # Provides { user, loading } via onAuthStateChanged
+│   │   ├── AuthContext.jsx         # Provides { user, loading, isAdmin } via onAuthStateChanged + getIdTokenResult
 │   │   └── ProgressContext.jsx     # Provides { progress, loading, awardXP, completeLevel, isLevelUnlocked, calculateStars }
 │   ├── hooks/
 │   │   ├── useLevelData.js         # Fetches /data/es/level_N.json — returns { phrases, loading, error }
