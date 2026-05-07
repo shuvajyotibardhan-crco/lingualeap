@@ -1,0 +1,166 @@
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- CI/CD Container -->
+    <mxCell id="cicd" value="CI / CD (GitHub Actions)" style="swimlane;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="20" y="20" width="540" height="90" as="geometry"/>
+    </mxCell>
+    <mxCell id="github" value="GitHub&#xa;push to main" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="cicd">
+      <mxGeometry x="20" y="36" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="actions" value="GitHub Actions&#xa;deploy.yml" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="cicd">
+      <mxGeometry x="240" y="36" width="160" height="44" as="geometry"/>
+    </mxCell>
+    <mxCell id="e_ghactions" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="github" target="actions" parent="cicd">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Browser Container -->
+    <mxCell id="browser" value="Browser (Client)" style="swimlane;startSize=30;fillColor=#e3f2fd;strokeColor=#1565c0;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="20" y="140" width="740" height="720" as="geometry"/>
+    </mxCell>
+
+    <!-- React App sub-container -->
+    <mxCell id="reactapp" value="React App — Vite PWA" style="swimlane;startSize=25;fillColor=#fffde7;strokeColor=#f9a825;fontSize=11;fontStyle=1;" vertex="1" parent="browser">
+      <mxGeometry x="15" y="40" width="710" height="330" as="geometry"/>
+    </mxCell>
+
+    <!-- Contexts -->
+    <mxCell id="authctx" value="AuthContext&#xa;user · isAdmin · emailVerified" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="reactapp">
+      <mxGeometry x="15" y="40" width="200" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="progctx" value="ProgressContext&#xa;xp · stars · badges · unlocked" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="reactapp">
+      <mxGeometry x="235" y="40" width="200" height="50" as="geometry"/>
+    </mxCell>
+    <mxCell id="usecallable" value="useCallable.js&#xa;httpsCallable wrapper" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="reactapp">
+      <mxGeometry x="455" y="40" width="240" height="50" as="geometry"/>
+    </mxCell>
+
+    <!-- Pages sub-group -->
+    <mxCell id="pages_grp" value="Pages / Routes" style="swimlane;startSize=20;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;fontStyle=1;" vertex="1" parent="reactapp">
+      <mxGeometry x="15" y="110" width="340" height="200" as="geometry"/>
+    </mxCell>
+    <mxCell id="levelmap" value="LevelMap" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#aaaaaa;fontSize=10;" vertex="1" parent="pages_grp">
+      <mxGeometry x="10" y="30" width="150" height="35" as="geometry"/>
+    </mxCell>
+    <mxCell id="levelpage" value="LevelPage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#aaaaaa;fontSize=10;" vertex="1" parent="pages_grp">
+      <mxGeometry x="175" y="30" width="150" height="35" as="geometry"/>
+    </mxCell>
+    <mxCell id="admindash" value="AdminDashboard&#xa;Users | Messages | Settings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#aaaaaa;fontSize=10;" vertex="1" parent="pages_grp">
+      <mxGeometry x="10" y="85" width="315" height="40" as="geometry"/>
+    </mxCell>
+    <mxCell id="usersettings" value="UserSettings" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#aaaaaa;fontSize=10;" vertex="1" parent="pages_grp">
+      <mxGeometry x="10" y="145" width="150" height="35" as="geometry"/>
+    </mxCell>
+    <mxCell id="verifypages" value="Verify Pages&#xa;(email / username / progress)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#aaaaaa;fontSize=10;" vertex="1" parent="pages_grp">
+      <mxGeometry x="175" y="145" width="150" height="40" as="geometry"/>
+    </mxCell>
+
+    <!-- Game Modes sub-group -->
+    <mxCell id="modes_grp" value="Game Modes" style="swimlane;startSize=20;fillColor=#f5f5f5;strokeColor=#999999;fontSize=10;fontStyle=1;" vertex="1" parent="reactapp">
+      <mxGeometry x="375" y="110" width="320" height="200" as="geometry"/>
+    </mxCell>
+    <mxCell id="discovery" value="Discovery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="modes_grp">
+      <mxGeometry x="10" y="30" width="140" height="35" as="geometry"/>
+    </mxCell>
+    <mxCell id="shadow" value="Shadow Challenge&#xa;(fuzzy.js ≥ 60%)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="modes_grp">
+      <mxGeometry x="165" y="30" width="140" height="45" as="geometry"/>
+    </mxCell>
+    <mxCell id="roleplay" value="Roleplay" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="modes_grp">
+      <mxGeometry x="10" y="95" width="140" height="35" as="geometry"/>
+    </mxCell>
+    <mxCell id="quickfire" value="QuickFire" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="modes_grp">
+      <mxGeometry x="165" y="95" width="140" height="35" as="geometry"/>
+    </mxCell>
+    <mxCell id="nounbank_c" value="NounBank (1,373 words) · ContactButton + Modal" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="modes_grp">
+      <mxGeometry x="10" y="150" width="295" height="35" as="geometry"/>
+    </mxCell>
+
+    <!-- Browser support layer -->
+    <mxCell id="speech" value="Web Speech API — Browser Native&#xa;SpeechSynthesis (TTS)  ·  SpeechRecognition (ASR)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="browser">
+      <mxGeometry x="15" y="390" width="440" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="sw" value="Service Worker (Workbox)&#xa;offline asset cache (PWA)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="browser">
+      <mxGeometry x="470" y="390" width="255" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="staticdata" value="/data/es/level_N.json  ·  /data/es/noun_bank.json&#xa;Static JSON served from Hosting — cached by Service Worker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="browser">
+      <mxGeometry x="15" y="465" width="710" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="fbsdk" value="firebase.js — Firebase Client SDK&#xa;Auth  ·  Firestore (persistentLocalCache)  ·  Cloud Functions  ·  Storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffcdd2;strokeColor=#b71c1c;fontSize=10;fontStyle=1;" vertex="1" parent="browser">
+      <mxGeometry x="15" y="545" width="710" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="guards_label" value="ProtectedRoute (auth guard)  ·  AdminRoute (admin custom claim)  ·  ForcePasswordChange overlay" style="text;html=1;align=center;verticalAlign=middle;fontSize=10;fontStyle=2;fontColor=#555555;" vertex="1" parent="browser">
+      <mxGeometry x="15" y="618" width="710" height="28" as="geometry"/>
+    </mxCell>
+
+    <!-- Firebase Platform Container -->
+    <mxCell id="firebase" value="Firebase Platform — lingualeap-divel" style="swimlane;startSize=30;fillColor=#fce4ec;strokeColor=#b71c1c;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="820" y="140" width="380" height="560" as="geometry"/>
+    </mxCell>
+    <mxCell id="fbauth" value="Firebase Auth&#xa;Email/Password  ·  Google OAuth" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="firebase">
+      <mxGeometry x="25" y="50" width="330" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="firestore" value="Cloud Firestore&#xa;users/{uid}  ·  contactMessages  ·  adminActions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="firebase">
+      <mxGeometry x="25" y="135" width="330" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="fbhosting" value="Firebase Hosting (CDN)&#xa;serves React build — dist/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="firebase">
+      <mxGeometry x="25" y="220" width="330" height="55" as="geometry"/>
+    </mxCell>
+    <mxCell id="fbfunctions" value="Cloud Functions — Node 20 — us-central1&#xa;12 functions: contact · admin ops&#xa;email verification · progress reset · audit log" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="firebase">
+      <mxGeometry x="25" y="305" width="330" height="75" as="geometry"/>
+    </mxCell>
+    <mxCell id="fbstorage" value="Firebase Storage&#xa;admin-proofs/{action}/{uid}/ (PDF uploads)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="firebase">
+      <mxGeometry x="25" y="415" width="330" height="55" as="geometry"/>
+    </mxCell>
+
+    <!-- Admin SDK internal edges (within firebase container) -->
+    <mxCell id="e_fn_firestore" value="Admin SDK" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;strokeColor=#b85450;" edge="1" source="fbfunctions" target="firestore" parent="firebase">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e_fn_auth" value="Admin SDK" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;strokeColor=#b85450;" edge="1" source="fbfunctions" target="fbauth" parent="firebase">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Brevo (external) -->
+    <mxCell id="brevo" value="Brevo SMTP&#xa;Transactional email  ·  300 emails/day free tier" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6d0de;strokeColor=#76608a;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="820" y="740" width="380" height="60" as="geometry"/>
+    </mxCell>
+
+    <!-- Cross-container edges -->
+
+    <!-- CI/CD → Firebase deploy -->
+    <mxCell id="e_deploy_hosting" value="deploy Hosting" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#d6b656;" edge="1" source="actions" target="fbhosting" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e_deploy_fn" value="deploy Functions" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#d6b656;" edge="1" source="actions" target="fbfunctions" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Firebase Hosting → Browser (serves assets on load) -->
+    <mxCell id="e_serve" value="serves app" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;dashed=1;endArrow=open;endFill=0;strokeColor=#1565c0;" edge="1" source="fbhosting" target="browser" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- firebase.js SDK → Firebase services -->
+    <mxCell id="e_sdk_auth" value="auth" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b71c1c;" edge="1" source="fbsdk" target="fbauth" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e_sdk_firestore" value="read / write" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b71c1c;" edge="1" source="fbsdk" target="firestore" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e_sdk_callable" value="httpsCallable" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b71c1c;" edge="1" source="fbsdk" target="fbfunctions" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e_sdk_storage" value="upload proofs" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b71c1c;" edge="1" source="fbsdk" target="fbstorage" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+    <!-- Cloud Functions → Brevo -->
+    <mxCell id="e_smtp" value="SMTP (Nodemailer)" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#76608a;" edge="1" source="fbfunctions" target="brevo" parent="1">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+
+  </root>
+</mxGraphModel>

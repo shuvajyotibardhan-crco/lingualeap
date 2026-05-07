@@ -10,58 +10,10 @@ LinguaLeap is a progressive web app with a thin serverless backend. All gameplay
 
 ## Architecture Diagram
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                            Browser (Client)                             │
-│                                                                         │
-│  ┌─────────────┐   ┌──────────────────────────────────────────────┐    │
-│  │  React App  │   │              Web Speech API                   │    │
-│  │  (Vite PWA) │   │  SpeechSynthesis (TTS) │ SpeechRecognition   │    │
-│  └──────┬──────┘   └──────────────────────────────────────────────┘    │
-│         │                                                               │
-│  ┌──────▼───────────────────────────────────────────────────────────┐  │
-│  │                      React Component Tree                         │  │
-│  │                                                                   │  │
-│  │  AuthContext ──► LoginPage / RegisterPage / UserSettings          │  │
-│  │  ProgressContext ──► LevelMap ──► LevelPage                       │  │
-│  │                   │       │                                       │  │
-│  │              ContactBtn  ⚙ Settings                               │  │
-│  │                          │                                        │  │
-│  │              ┌───────────┼───────────────┐                        │  │
-│  │           Discovery  Shadow          Roleplay  QuickFire           │  │
-│  │           Mode       Challenge       Mode      Mode                │  │
-│  │                                                                   │  │
-│  │  AdminRoute ──► AdminDashboard (Users | Messages | Settings tab)  │  │
-│  │                                                                   │  │
-│  │  VerifyEmailChangePage / VerifyUsernameChangePage (public)        │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│         │                              │                                │
-│  ┌──────▼──────┐             ┌─────────▼──────┐                        │
-│  │ /data/es/   │             │  firebase.js   │                        │
-│  │ level_N.json│             │  (client SDK)  │                        │
-│  │ noun_bank   │             └─────────┬──────┘                        │
-│  └─────────────┘                       │                               │
-│                        ┌───────────────┼───────────────┐               │
-│                        ▼               ▼               ▼               │
-│                  Firebase Auth   Firestore      Cloud Functions         │
-│                  (email/Google)  (user docs,   (Admin SDK calls,        │
-│                                  contact msgs) email dispatch)          │
-│                                                        │               │
-│  Service Worker (Vite PWA) ── caches assets offline    │               │
-└────────────────────────────────────────────────────────┼───────────────┘
-                                                         │ SMTP
-                                                    Brevo / SMTP
-                                                  (transactional email)
+![Architecture Diagram](architecture.drawio)
 
-                              ▲  deploy
-                              │
-                  GitHub Actions (deploy.yml)
-                  triggered on push to main
-                              │
-                  ┌───────────┴────────────┐
-            Firebase Hosting          Cloud Functions
-                 (CDN)               (Node 20, us-central1)
-```
+> Source file: `docs/architecture.drawio` — open in [draw.io](https://app.diagrams.net) or the VS Code draw.io extension.
+> Keep this file updated whenever components, data flows, or deployment topology change.
 
 ---
 
