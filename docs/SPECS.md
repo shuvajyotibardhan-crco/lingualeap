@@ -125,7 +125,8 @@ users/
 ```
 
 **Security rules (summary):**
-- Read and write allowed only if `request.auth.uid == resource.data.uid`
+- Read allowed if `request.auth.uid == uid` (own document) OR `request.auth.token.admin == true` (admin reads any document)
+- Write allowed only if `request.auth.uid == uid`
 - Cloud Functions running under Admin SDK bypass all rules and can read/write any user document
 
 **Collection:** `contactMessages`
@@ -613,7 +614,7 @@ Language Learning App/
 | Area | Decision |
 |---|---|
 | Auth | Firebase Auth manages all tokens — no custom JWT handling |
-| Firestore rules | `users/{uid}`: scoped to own UID. `contactMessages`: authenticated create with field validation; all reads/writes by admin via Admin SDK (bypasses rules). |
+| Firestore rules | `users/{uid}`: read by own UID or admin custom claim; write by own UID only. `contactMessages`: authenticated create with field validation; all reads/writes by Cloud Functions via Admin SDK. `adminActions`: admin-read only; client writes denied. |
 | Admin identity | Admin UID stored as GitHub Actions Secret → written to `functions/.env` at deploy time — never in client bundle or Firestore rules string comparison |
 | Admin claim | Custom claim `admin: true` set once via Admin SDK script on the admin account. `AdminRoute` force-refreshes the token (`getIdTokenResult(true)`) to get the latest claims. |
 | Cloud Function security | All admin-only callable functions call `assertAdmin(context)` as the first operation — before any data access. CF-5/CF-3 allow self-service by validating `targetUid === context.auth.uid` for non-admin callers. |
