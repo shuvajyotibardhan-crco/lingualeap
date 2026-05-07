@@ -3,6 +3,8 @@
 //
 // Get UID from Firebase Console → Authentication → find app_admin@divel.me → copy UID.
 
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
 const admin = require('firebase-admin')
 
 const uid = process.argv[2]
@@ -15,10 +17,10 @@ admin.initializeApp()
 
 admin.auth().setCustomUserClaims(uid, { admin: true })
   .then(() => {
-    console.log(`✅ Admin claim set for uid: ${uid}`)
+    console.log(`Admin claim set for uid: ${uid}`)
     process.exit(0)
   })
   .catch(err => {
-    console.error('❌ Failed:', err.message)
+    console.error('Failed:', err.message)
     process.exit(1)
   })

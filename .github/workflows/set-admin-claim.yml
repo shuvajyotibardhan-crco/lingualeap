@@ -15,8 +15,7 @@ jobs:
           node-version: 20
 
       - name: Install firebase-admin
-        working-directory: functions
-        run: npm ci
+        run: npm install firebase-admin --no-save
 
       - name: Write service account
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
