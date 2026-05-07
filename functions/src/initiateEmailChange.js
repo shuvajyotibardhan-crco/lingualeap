@@ -1,6 +1,6 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
-const { generateToken } = require('./adminHelpers')
+const { generateToken, writeAuditLog } = require('./adminHelpers')
 const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
@@ -10,7 +10,7 @@ const APP_URL = 'https://lingualeap-divel.web.app'
 exports.initiateEmailChange = onCall(async (request) => {
   if (!request.auth) throw new HttpsError('unauthenticated', 'Must be signed in')
 
-  const { targetUid, newEmail } = request.data || {}
+  const { targetUid, newEmail, proofUrl } = request.data || {}
   if (!targetUid) throw new HttpsError('invalid-argument', 'targetUid required')
   if (!newEmail || !/\S+@\S+\.\S+/.test(newEmail)) {
     throw new HttpsError('invalid-argument', 'Valid new email required')
@@ -19,6 +19,9 @@ exports.initiateEmailChange = onCall(async (request) => {
   const isAdmin = request.auth.uid === process.env.ADMIN_UID
   if (!isAdmin && request.auth.uid !== targetUid) {
     throw new HttpsError('permission-denied', 'Can only change your own email')
+  }
+  if (isAdmin && !proofUrl) {
+    throw new HttpsError('invalid-argument', 'proofUrl required for admin-initiated email change')
   }
 
   const userRecord = await admin.auth().getUser(targetUid)
@@ -49,6 +52,18 @@ exports.initiateEmailChange = onCall(async (request) => {
     'Confirm your LinguaLeap email change',
     `Hi ${userRecord.displayName || 'there'},\n\nClick the link below to confirm your login email change to: ${newEmail}\n\nThis link expires in 24 hours.\n\n${link}\n\n— The LinguaLeap Team`
   )
+
+  if (isAdmin) {
+    await writeAuditLog({
+      adminUid:       request.auth.uid,
+      action:         'initiateEmailChange',
+      targetUid,
+      targetEmail:    userRecord.email,
+      targetUsername: userRecord.displayName || null,
+      proofUrl,
+      details:        { newEmail },
+    })
+  }
 
   return { success: true }
 })

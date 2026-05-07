@@ -1,6 +1,6 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
-const { assertAdmin } = require('./adminHelpers')
+const { assertAdmin, writeAuditLog } = require('./adminHelpers')
 const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
@@ -36,6 +36,16 @@ exports.adminReplyToContact = onCall(async (request) => {
   } catch (err) {
     console.error('Failed to email user on reply:', err)
   }
+
+  await writeAuditLog({
+    adminUid:       request.auth.uid,
+    action:         'replyToContact',
+    targetUid:      data.uid  || null,
+    targetEmail:    data.email || null,
+    targetUsername: data.username || null,
+    proofUrl:       null,
+    details:        { messageId, replyText: replyText.trim() },
+  })
 
   return { success: true }
 })

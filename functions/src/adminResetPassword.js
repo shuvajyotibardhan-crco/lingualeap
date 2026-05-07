@@ -1,6 +1,6 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const admin = require('firebase-admin')
-const { generateTempPassword } = require('./adminHelpers')
+const { generateTempPassword, writeAuditLog } = require('./adminHelpers')
 const { sendEmail } = require('./email')
 
 if (!admin.apps.length) admin.initializeApp()
@@ -8,12 +8,15 @@ if (!admin.apps.length) admin.initializeApp()
 exports.adminResetPassword = onCall(async (request) => {
   if (!request.auth) throw new HttpsError('unauthenticated', 'Must be signed in')
 
-  const { targetUid } = request.data || {}
+  const { targetUid, proofUrl } = request.data || {}
   if (!targetUid) throw new HttpsError('invalid-argument', 'targetUid required')
 
   const isAdmin = request.auth.uid === process.env.ADMIN_UID
   if (!isAdmin && request.auth.uid !== targetUid) {
     throw new HttpsError('permission-denied', 'Can only reset your own password')
+  }
+  if (isAdmin && !proofUrl) {
+    throw new HttpsError('invalid-argument', 'proofUrl required for admin-initiated reset')
   }
 
   const tempPassword = generateTempPassword()
@@ -33,6 +36,18 @@ exports.adminResetPassword = onCall(async (request) => {
     )
   } catch (err) {
     console.error('Failed to email temp password:', err)
+  }
+
+  if (isAdmin) {
+    await writeAuditLog({
+      adminUid:       request.auth.uid,
+      action:         'resetPassword',
+      targetUid,
+      targetEmail:    userRecord.email,
+      targetUsername: userRecord.displayName || null,
+      proofUrl,
+      details:        {},
+    })
   }
 
   return { success: true }

@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { initializeFirestore, persistentLocalCache } from 'firebase/firestore'
 import { getFunctions } from 'firebase/functions'
+import { getStorage } from 'firebase/storage'
 
 const {
   VITE_FIREBASE_API_KEY: apiKey,
@@ -21,3 +22,4 @@ const app = initializeApp({ apiKey, authDomain, projectId, storageBucket, messag
 export const auth      = getAuth(app)
 export const db        = initializeFirestore(app, { localCache: persistentLocalCache() })
 export const functions = getFunctions(app)
+export const storage   = getStorage(app)

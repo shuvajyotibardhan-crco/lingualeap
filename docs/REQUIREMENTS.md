@@ -478,8 +478,9 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 3. Any unauthenticated user navigating to `/admin` **must** be redirected to `/login`
 
 ### Users Tab
-4. The Users tab **must** display a list of all registered users, showing at minimum: username, email, XP total, and number of completed levels
-5. The Users tab **must** provide a text filter that narrows the displayed list by username in real time
+4. The Users tab **must** display a filtered list of registered users matching a search query, showing at minimum: username, email, XP total, and number of completed levels
+5. The Users tab search **must** require a minimum of 3 characters before any results are shown; the search **shall** perform a wildcard (substring) match against both username and email
+5a. When fewer than 3 characters have been typed, the Users tab **must** display a hint indicating how many more characters are needed; no user records **must** be shown
 6. Expanding a user row **shall** display that user's full progress: XP, per-level star ratings, and earned badges
 
 ### Messages Tab
@@ -487,6 +488,16 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 8. Each message **shall** show: sender username, sender email, message body, submission timestamp, and any existing replies
 9. The admin **must** be able to type a reply and send it; sending **must** trigger a real email to the user's email address from `app_admin@divel.me`
 10. After a reply is sent, the message **must** be automatically marked as "Resolved" in Firestore
+
+### Settings Tab — User Search
+10a. The Settings tab user search **must** require a minimum of 3 characters before any results are shown; the search **shall** perform a wildcard (substring) match against both username and email
+
+### Settings Tab — Supporting Proof
+10b. Before submitting any Settings tab action (password reset, username update, email change), the admin **must** upload a supporting proof document in PDF format
+10c. The PDF **must** be accepted only if it is a valid PDF MIME type and does not exceed 10 MB
+10d. The submit button for each action **must** remain disabled until a proof PDF has been successfully uploaded to Firebase Storage
+10e. Uploaded proof PDFs **must** be stored in Firebase Storage at path `admin-proofs/{action}/{targetUid}/{adminUid}_{timestamp}.pdf`
+10f. The Firebase Storage bucket **must** only allow read and write access to users whose Firebase ID token contains the custom claim `admin: true`; all other access **must** be denied
 
 ### Settings Tab — Reset Password (admin-initiated)
 11. The admin **must** be able to select any user and trigger a password reset
@@ -512,6 +523,12 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 27. An invalid or already-used token **must** be rejected with an "Invalid link" error
 28. All user management operations in the Settings tab **must** require the caller to hold the `admin: true` custom claim, validated server-side in the Cloud Function
 
+### Audit Trail
+29. Every admin-initiated action (password reset, username update, email change initiation, contact reply) **must** create an immutable audit log entry in the `adminActions` Firestore collection via the Admin SDK
+30. Each audit entry **must** record: `action`, `adminUid`, `targetUid`, `targetEmail`, `targetUsername`, `proofUrl` (null for contact replies), `details` (action-specific data), and `performedAt` timestamp
+31. The `adminActions` collection **must** only be readable by users whose Firebase ID token contains `admin: true`; client-side writes **must** be denied
+32. Audit entries **must** be written server-side only (via Admin SDK in Cloud Functions) and **must never** be writable from the client
+
 **Test Plan:**
 
 | # | Step | Expected Result |
@@ -519,12 +536,13 @@ Build the **complete app** (all engine + UI features) using **Phase 1 content on
 | 1 | Sign in as a non-admin user; navigate to `/admin` | Redirected to Level Map |
 | 2 | Navigate to `/admin` while signed out | Redirected to `/login` |
 | 3 | Sign in as admin; navigate to `/admin` | Dashboard loads with three tabs: Users, Messages, Settings |
-| 4 | Users tab: verify all registered users appear | List shows username, email, XP, completed levels |
-| 5 | Users tab: type partial username in filter | List narrows in real time to matching users |
+| 4 | Users tab: type 1–2 characters in search field | Hint shown ("X more characters needed"); no results displayed |
+| 5 | Users tab: type 3+ characters matching a known username or email | Matching user rows appear; non-matching rows hidden |
 | 6 | Users tab: expand a user row | XP, per-level stars, and badges shown |
 | 7 | Messages tab: submit a contact form as a non-admin user | Message appears in Open section of Messages tab |
 | 8 | Messages tab: type a reply and send | Reply email arrives in user's inbox; message moves to Resolved |
-| 9 | Settings tab: reset password for a test user | User receives email with temporary password; admin sees only "Success" confirmation |
+| 9 | Settings tab: attempt to reset password without uploading PDF | Submit button remains disabled |
+| 9a | Settings tab: upload a valid PDF proof, then reset password for a test user | PDF uploads to Firebase Storage; user receives email with temporary password; audit entry written to `adminActions`; admin sees only "Success" confirmation |
 | 10 | Test user logs in with temporary password | `requiresPasswordChange` flag detected; full-screen password-change overlay shown |
 | 11 | Test user sets new password via overlay | Overlay dismisses; `requiresPasswordChange` cleared in Firestore; user stays signed in |
 | 12 | Settings tab: update username for a test user | Display name updated immediately in-app; user receives email notification |

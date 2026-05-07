@@ -70,6 +70,24 @@ interface ContactMessage {
 }
 ```
 
+### AdminAction (Firestore document — `adminActions` collection)
+```ts
+interface AdminAction {
+  action:         'resetPassword' | 'updateUsername' | 'initiateEmailChange' | 'replyToContact';
+  adminUid:       string;          // UID of the admin who performed the action
+  targetUid:      string | null;   // UID of the affected user (null for replyToContact without uid)
+  targetEmail:    string | null;   // email address of the affected user at time of action
+  targetUsername: string | null;   // display name of the affected user at time of action
+  proofUrl:       string | null;   // Firebase Storage download URL of the uploaded PDF; null for replyToContact
+  details:        object;          // action-specific data:
+                                   //   resetPassword: {}
+                                   //   updateUsername: { newUsername: string }
+                                   //   initiateEmailChange: { newEmail: string }
+                                   //   replyToContact: { messageId: string, replyText: string }
+  performedAt:    Timestamp;       // server timestamp at time of CF execution
+}
+```
+
 ### NounBankEntry
 ```ts
 interface NounBankEntry {
@@ -130,6 +148,40 @@ contactMessages/
 - Authenticated users may `create` where `request.resource.data.uid == request.auth.uid`, `status == "open"`, and `message.size() <= 2000`
 - Pre-login (unauthenticated) submissions written by CF-0 via Admin SDK (bypasses rules)
 - All reads and updates performed by Cloud Functions via Admin SDK
+
+**Collection:** `adminActions`
+**Document ID:** auto-generated
+
+```
+adminActions/
+  {actionId}/
+    action:         string          // 'resetPassword' | 'updateUsername' | 'initiateEmailChange' | 'replyToContact'
+    adminUid:       string
+    targetUid:      string | null
+    targetEmail:    string | null
+    targetUsername: string | null
+    proofUrl:       string | null   // Firebase Storage download URL; null for replyToContact
+    details:        map             // action-specific fields
+    performedAt:    timestamp
+```
+
+**adminActions security rules:**
+- Authenticated users with `admin: true` custom claim may `read`
+- All writes performed exclusively by Cloud Functions via Admin SDK; client writes are denied (`allow write: if false`)
+
+**Firebase Storage** — bucket: `lingualeap-divel.firebasestorage.app`
+
+```
+admin-proofs/
+  {action}/                         // resetPassword | updateUsername | updateEmail
+    {targetUid}/
+      {adminUid}_{timestamp}.pdf    // uploaded before each admin action; download URL stored in adminActions
+```
+
+**Storage security rules:**
+- `admin-proofs/**`: read and write allowed only if `request.auth.token.admin == true`
+- All other paths: denied
+- Rules defined in `storage.rules`; must be applied manually in Firebase Console → Storage → Rules
 
 **Offline persistence:** enabled via `initializeFirestore(app, { localCache: persistentLocalCache() })` (Firebase 11 modern API) — all Firestore reads/writes survive network loss and sync on reconnect.
 
@@ -443,7 +495,7 @@ Language Learning App/
 │   ├── index.js                    # Exports all 9 Cloud Functions
 │   └── src/
 │       ├── email.js                # Nodemailer transporter + sendEmail(to, subject, text) helper
-│       ├── adminHelpers.js         # assertAdmin(ctx), generateTempPassword(), generateToken()
+│       ├── adminHelpers.js         # assertAdmin, generateTempPassword, generateToken, writeAuditLog
 │       ├── submitContactMessage.js # CF-0: open callable — writes contactMessage via Admin SDK
 │       ├── onContactCreated.js     # CF-1: Firestore trigger — emails admin on new message
 │       ├── adminReplyToContact.js  # CF-2: admin callable — emails user + updates Firestore
@@ -484,7 +536,7 @@ Language Learning App/
 │   │   ├── useProgress.js          # Re-exports ProgressContext values
 │   │   └── useCallable.js          # NEW — httpsCallable wrapper: { call, loading, error, data }
 │   ├── lib/
-│   │   ├── firebase.js             # Firebase app init; exports auth, db, functions
+│   │   ├── firebase.js             # Firebase app init; exports auth, db, functions, storage
 │   │   ├── tts.js                  # speak(text, lang), selectVoice(lang)
 │   │   ├── asr.js                  # startListening, stopListening; returns null if unsupported
 │   │   └── fuzzy.js                # similarity(a, b) — Levenshtein; PASS_THRESHOLD = 0.60
@@ -496,12 +548,12 @@ Language Learning App/
 │   │   ├── LevelCard.jsx           # Level tile on the map; locked/unlocked/completed states
 │   │   ├── ContactButton.jsx       # NEW — fixed bottom-right FAB; opens ContactModal
 │   │   ├── ContactModal.jsx        # NEW — slide-up contact form; calls CF-0
-│   │   ├── AdminRoute.jsx          # NEW — getIdTokenResult(true) claim check; redirects non-admin to /
+│   │   ├── AdminRoute.jsx          # getIdTokenResult(true) claim check; redirects non-admin to /
 │   │   └── ForcePasswordChange.jsx # NEW — full-screen overlay; updatePassword + clear Firestore flag
 │   ├── admin/                      # NEW — admin dashboard sub-components
-│   │   ├── UsersTab.jsx            # getDocs(users), filter by username, expandable rows
+│   │   ├── UsersTab.jsx            # getDocs(users), min-3-char wildcard filter, expandable rows
 │   │   ├── MessagesTab.jsx         # contactMessages grouped open/resolved, reply form → CF-2
-│   │   └── SettingsTab.jsx         # user search + 3 action panels → CF-3, CF-4, CF-5
+│   │   └── SettingsTab.jsx         # min-3-char UserSearch + ProofUpload + 3 action panels → CF-3, CF-4, CF-5
 │   ├── modes/
 │   │   ├── Discovery.jsx           # Tap objects → TTS; no scoring
 │   │   ├── ShadowChallenge.jsx     # TTS → mic → fuzzy score → pass/retry
@@ -531,7 +583,8 @@ Language Learning App/
 ├── .env                            # Local secrets — never committed
 ├── .env.example                    # Placeholder template — committed
 ├── .gitignore                      # node_modules/, dist/, .env, .DS_Store
-├── firebase.json                   # Firebase Hosting + Functions config
+├── firebase.json                   # Firebase Hosting + Functions + Storage config
+├── storage.rules                   # Firebase Storage security rules (admin-only; apply manually in Console)
 ├── firestore.rules                 # Firestore security rules
 ├── index.html                      # Vite HTML entry
 ├── package.json

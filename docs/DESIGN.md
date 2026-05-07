@@ -68,7 +68,7 @@ LinguaLeap is a progressive web app with a thin serverless backend. All gameplay
 ## Module Design
 
 ### `src/lib/firebase.js`
-Initialises the Firebase app with environment variables and exports `auth` (Firebase Auth instance) and `db` (Firestore instance). Single source of Firebase config — imported by all hooks that need Auth or Firestore.
+Initialises the Firebase app with environment variables and exports `auth` (Firebase Auth), `db` (Firestore with persistent local cache), `functions` (Cloud Functions), and `storage` (Firebase Storage). Single source of Firebase config — imported by all hooks and admin components that need these services.
 
 ### `src/lib/tts.js`
 Wraps `window.speechSynthesis`. Exports `speak(text, lang)` — cancels any current utterance, selects the best matching voice for the given language code (`es-ES`, `es-MX` preference order), then calls `speechSynthesis.speak()`. Falls back to the default voice if no Spanish voice is available.
@@ -171,13 +171,16 @@ Public page at `/verify-email-change`. Reads `token` and `uid` query parameters 
 Public page at `/verify-username-change`. Reads `token` and `uid` query params. On mount calls `verifyUsernameChangeToken` Cloud Function to validate the token (without yet committing a name). On success renders a text input for the new username (1–40 characters) and a submit button that calls `applyUsernameChange`. On error shows the same expired/invalid states as `VerifyEmailChangePage`.
 
 ### `src/admin/UsersTab.jsx`
-Queries `users` collection via `getDocs` on mount (Admin SDK via Cloud Functions is not used here — the admin user's elevated Firestore access comes from their client-side auth token being used against updated Firestore rules). Renders a search input that filters client-side by username. Each user row shows username, email, XP, and completed-level count. Expanding a row reveals a per-level star grid and badge list.
+Queries `users` collection via `getDocs` on mount. Renders a search input that filters client-side by username or email substring match. Results are suppressed until the query is at least 3 characters; a contextual hint counts down the remaining characters needed. Each user row shows username, email, XP, and completed-level count. Expanding a row reveals a per-level star grid and badge list.
 
 ### `src/admin/MessagesTab.jsx`
 Queries `contactMessages` collection ordered by `createdAt` descending. Groups documents into "Open" and "Resolved" sections. Each message card is expandable to show full text and the reply thread. An inline reply form (textarea + Send button) calls the `adminReplyToContact` Cloud Function via `useCallable`. Shows a loading indicator per card during send.
 
 ### `src/admin/SettingsTab.jsx`
-Contains a user-search input (queries `users` by username prefix). On selecting a user, three action panels are revealed side by side (or stacked on mobile): Reset Password, Update Username, Update Login Email. Each panel calls its corresponding Cloud Function. Reset Password requires an "Are you sure?" confirmation step. All panels show loading, success, and error states independently.
+Contains a reusable `UserSearch` component (min-3-char wildcard, explicit Search button) and a `ProofUpload` component. Three action panels (Reset Password, Update Username, Update Login Email) share this pattern: select a user → enter action details → upload a PDF proof to Firebase Storage → submit is enabled only once the proof URL is set. Each panel passes `proofUrl` to its Cloud Function callable. All panels show loading, success, and error states independently.
+
+### `src/admin/ProofUpload` (inline component in SettingsTab.jsx)
+Accepts `action`, `targetUid`, and `onUploaded` props. Validates the selected file is a PDF ≤10 MB, then uploads it via `uploadBytesResumable` to `admin-proofs/{action}/{targetUid}/{adminUid}_{timestamp}.pdf`. Shows an upload-progress bar during the transfer and a green success state (with a remove option) on completion. Calls `onUploaded(url)` with the Firebase Storage download URL.
 
 ### `src/hooks/useCallable.js`
 Thin wrapper around Firebase `httpsCallable`. Returns `{ call, loading, error, data }`. `call(payload)` invokes the named Cloud Function, sets `loading: true` during execution, and populates `data` or `error` on completion. Allows components to avoid boilerplate try/catch and loading state management for every Cloud Function call.
@@ -187,9 +190,11 @@ Nodemailer transporter factory. Reads SMTP credentials from `process.env.SMTP_HO
 
 ### `functions/src/adminHelpers.js`
 Shared utilities for Cloud Functions. Exports:
-- `assertAdmin(context)` — checks `context.auth?.uid === process.env.ADMIN_UID`; throws `HttpsError('permission-denied')` if not
+- `assertAdmin(request)` — checks `request.auth?.uid === process.env.ADMIN_UID`; throws `HttpsError('permission-denied')` if not
+- `assertSelfOrAdmin(request, targetUid)` — allows self-service or admin calls; throws otherwise
 - `generateTempPassword()` — `crypto.randomBytes(9).toString('base64url').slice(0, 12)` (~71 bits entropy)
 - `generateToken()` — `crypto.randomBytes(32).toString('hex')` (64 hex chars, 256 bits)
+- `writeAuditLog({ adminUid, action, targetUid, targetEmail, targetUsername, proofUrl, details })` — writes an immutable document to the `adminActions` Firestore collection via Admin SDK. Called by all four admin-action functions after successful execution.
 
 ### `functions/index.js` — Cloud Functions (9 total)
 
@@ -197,16 +202,16 @@ Shared utilities for Cloud Functions. Exports:
 |---|---|---|---|
 | `submitContactMessage` | callable | any | Validates + writes contact message to Firestore via Admin SDK (handles auth'd and pre-login users) |
 | `onContactCreated` | Firestore trigger | automatic | Emails admin at `app_admin@divel.me` on new contact message |
-| `adminReplyToContact` | callable | admin only | Appends reply to Firestore, emails reply to user, marks message resolved |
-| `resetPassword` | callable | self or admin | Generates random temp password, updates Auth, sets `requiresPasswordChange`, emails user. Admin can target any UID; non-admin can only target own UID |
-| `adminUpdateUsername` | callable | admin only | Directly updates Auth displayName + Firestore `username`; emails notification to user |
-| `initiateEmailChange` | callable | self or admin | Stores `pendingEmailChange` token in Firestore, emails verification link to current email. Admin can target any UID; non-admin only own UID |
+| `adminReplyToContact` | callable | admin only | Appends reply to Firestore, emails reply to user, marks message resolved, writes audit log |
+| `resetPassword` | callable | self or admin | Generates random temp password, updates Auth, sets `requiresPasswordChange`, emails user, writes audit log (admin path requires `proofUrl`). Admin can target any UID; non-admin can only target own UID |
+| `adminUpdateUsername` | callable | admin only | Directly updates Auth displayName + Firestore `username`; emails notification to user; writes audit log (requires `proofUrl`) |
+| `initiateEmailChange` | callable | self or admin | Stores `pendingEmailChange` token in Firestore, emails verification link to current email, writes audit log (admin path requires `proofUrl`). Admin can target any UID; non-admin only own UID |
 | `verifyEmailChange` | callable | token-auth | Validates token, updates email in Auth, clears pending state, emails new address |
 | `initiateUsernameChange` | callable | self only | Stores `pendingUsernameChange` token in Firestore, emails verification link to user |
 | `verifyUsernameChange` | callable | token-auth | Validates token, accepts new username in payload, updates Auth displayName + Firestore |
 
 ### `.github/workflows/deploy.yml`
-GitHub Actions workflow: triggers on push to `main`, installs deps (including `functions/` Node deps), builds the React app with env vars from GitHub Secrets, then deploys both Firebase Hosting and Cloud Functions via the Firebase CLI authenticated with the service account secret. Firestore security rules are managed directly in the Firebase Console (the service account lacks the Service Usage permissions required for `firebase-tools` rules deployment).
+GitHub Actions workflow: triggers on push to `main`, installs deps (including `functions/` Node deps), builds the React app with env vars from GitHub Secrets, then deploys both Firebase Hosting and Cloud Functions via the Firebase CLI authenticated with the service account secret. Firestore and Firebase Storage security rules are managed directly in the Firebase Console (the service account lacks the Service Usage permissions required for `firebase-tools` rules deployment). `storage.rules` and `firestore.rules` are kept in the repo as the source of truth and must be pasted into the respective Console editors after any rule change.
 
 ---
 

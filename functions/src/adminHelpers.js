@@ -1,5 +1,6 @@
 const { HttpsError } = require('firebase-functions/v2/https')
 const crypto         = require('crypto')
+const admin          = require('firebase-admin')
 
 function assertAdmin(request) {
   if (!request.auth || request.auth.uid !== process.env.ADMIN_UID) {
@@ -22,4 +23,17 @@ function generateToken() {
   return crypto.randomBytes(32).toString('hex')
 }
 
-module.exports = { assertAdmin, assertSelfOrAdmin, generateTempPassword, generateToken }
+async function writeAuditLog({ adminUid, action, targetUid, targetEmail, targetUsername, proofUrl, details }) {
+  await admin.firestore().collection('adminActions').add({
+    action,
+    adminUid,
+    targetUid:      targetUid      || null,
+    targetEmail:    targetEmail    || null,
+    targetUsername: targetUsername || null,
+    proofUrl:       proofUrl       || null,
+    details:        details        || {},
+    performedAt:    admin.firestore.Timestamp.now(),
+  })
+}
+
+module.exports = { assertAdmin, assertSelfOrAdmin, generateTempPassword, generateToken, writeAuditLog }
