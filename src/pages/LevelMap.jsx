@@ -30,7 +30,7 @@ const PHASE_LABELS = {
 
 export default function LevelMap() {
   const navigate = useNavigate()
-  const { user } = useAuth()
+  const { user, isAdmin } = useAuth()
   const { progress, isLevelUnlocked } = useProgress()
 
   const byPhase = [1, 2, 3].map(p => ({
@@ -52,6 +52,14 @@ export default function LevelMap() {
             <span className="text-lg" title={progress.badges.join(', ')}>
               🏅×{progress.badges.length}
             </span>
+          )}
+          {isAdmin && (
+            <button
+              onClick={() => navigate('/admin')}
+              className="text-sm text-white/80 hover:text-white underline min-h-[44px] px-2"
+            >
+              Admin
+            </button>
           )}
           <button
             onClick={() => navigate('/settings')}

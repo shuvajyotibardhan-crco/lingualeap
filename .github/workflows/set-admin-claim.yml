@@ -1,0 +1,27 @@
+name: Set Admin Custom Claim (run once)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  set-claim:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install firebase-admin
+        working-directory: functions
+        run: npm ci
+
+      - name: Write service account
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
+
+      - name: Set admin custom claim
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/sa.json
+        run: node scripts/setAdminClaim.js ${{ secrets.ADMIN_UID }}
