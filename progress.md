@@ -1,7 +1,7 @@
 # Project State
 - **Last Updated:** 2026-05-07
 - **Current Branch:** main
-- **Current Task:** Progress Reset feature — implementation in progress
+- **Current Task:** Progress Reset feature — COMPLETE; deployed
 
 ## Completed Actions
 1. [x] All docs written & APPROVED (REQUIREMENTS, DESIGN, SPECS, TASKS) — Iteration 1
@@ -36,6 +36,7 @@
 30. [x] Audit trail: writeAuditLog() in adminHelpers → adminActions Firestore collection; all 4 admin CFs write audit entries; proofUrl included; firestore.rules denies client writes, allows admin reads
 31. [x] Firebase Storage: initialised in firebase.js; storage.rules created (admin custom-claim only); firebase.json updated
 32. [x] All docs updated — REQUIREMENTS F13 ACs 5/10a–10f/29–32; DESIGN modules + CF table; SPECS AdminAction model + adminActions + Storage schema + file inventory
+33. [x] T6 COMPLETE — CF-10 adminResetProgress; CF-11 initiateProgressReset; CF-12 verifyProgressReset; SettingsTab Reset Progress panel; UserSettings Reset Progress section; VerifyProgressResetPage; App.jsx route; TASKS.md updated
 
 ## Current Logic Context
 - Firebase project ID: lingualeap-divel
@@ -53,7 +54,7 @@
 - **Firebase Console → Storage → Rules**: paste contents of `storage.rules` (admin-only; enables proof uploads)
 - **Firebase Console → Firestore → Rules**: paste updated contents of `firestore.rules` (adds adminActions read-only rule)
 
-## Progress Reset Feature — Plan (implementation pending)
+## Progress Reset Feature — COMPLETE
 
 ### What to build
 - **CF-10 `adminResetProgress`** — admin callable; resets any user's progress to phase 1/2/3; requires proofUrl; writes audit log
@@ -75,4 +76,4 @@
 - Firestore → Rules: paste firestore.rules (with admin read on users collection)
 
 ## Next Immediate Step
-Implement CF-10, CF-11, CF-12, SettingsTab Reset Progress panel, UserSettings Reset Progress section, VerifyProgressResetPage, App.jsx route, then commit + push.
+All features complete. No pending implementation tasks.

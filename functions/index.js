@@ -10,6 +10,9 @@ const { initiateUsernameChange } = require('./src/initiateUsernameChange')
 const { verifyUsernameChange }  = require('./src/verifyUsernameChange')
 const { initiateEmailChange }   = require('./src/initiateEmailChange')
 const { verifyEmailChange }     = require('./src/verifyEmailChange')
+const { adminResetProgress }    = require('./src/adminResetProgress')
+const { initiateProgressReset } = require('./src/initiateProgressReset')
+const { verifyProgressReset }   = require('./src/verifyProgressReset')
 
 module.exports = {
   submitContactMessage,
@@ -21,4 +24,7 @@ module.exports = {
   verifyUsernameChange,
   initiateEmailChange,
   verifyEmailChange,
+  adminResetProgress,
+  initiateProgressReset,
+  verifyProgressReset,
 }

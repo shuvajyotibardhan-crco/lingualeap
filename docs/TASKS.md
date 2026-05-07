@@ -489,4 +489,43 @@ Phased task breakdown. Each iteration must be tested and signed off before the n
 - [x] Live URL confirmed stable — GitHub Actions deploy passed in 57s; https://lingualeap-divel.web.app live
 - [x] Check Firebase Console: Auth users, Firestore reads/writes within free tier
 
+---
+
+## ITERATION 6 — Progress Reset Feature
+
+### T6.1 — Docs update (pre-implementation)
+- [x] REQUIREMENTS.md — F13 ACs 35–38 (admin reset); F14 ACs 21–29 (self-service reset) written
+- [x] DESIGN.md — CF-10/11/12 entries; VerifyProgressResetPage module; SettingsTab updated
+- [x] SPECS.md — pendingProgressReset field; CF-10/11/12 specs; file inventory entries
+- [x] progress.md — plan captured
+
+### T6.2 — Shared helper (adminHelpers.js)
+- [x] `PHASE_LEVELS`, `PHASE_ENTRY`, `BADGES_REMOVE` constants
+- [x] `executeProgressReset(targetUid, resetToPhase)` helper — levelStars delete, XP subtract, badges filter, unlockedLevels adjust
+- [x] Export `executeProgressReset` in `module.exports`
+
+### T6.3 — CF-10: `adminResetProgress`
+- [x] `functions/src/adminResetProgress.js` — assertAdmin; validate phase ∈ {1,2,3}; require proofUrl; executeProgressReset; writeAuditLog
+
+### T6.4 — CF-11: `initiateProgressReset`
+- [x] `functions/src/initiateProgressReset.js` — self only; guard pending; store token; send verification email
+
+### T6.5 — CF-12: `verifyProgressReset`
+- [x] `functions/src/verifyProgressReset.js` — validate token + expiry (24h); executeProgressReset; delete pendingProgressReset
+
+### T6.6 — functions/index.js exports
+- [x] Export adminResetProgress, initiateProgressReset, verifyProgressReset
+
+### T6.7 — SettingsTab.jsx — Reset Progress panel (admin)
+- [x] 4th panel: UserSearch + phase selector + warning + ProofUpload + submit button calling adminResetProgress
+
+### T6.8 — VerifyProgressResetPage.jsx + App.jsx route
+- [x] `src/pages/VerifyProgressResetPage.jsx` — reads uid+token params; calls verifyProgressReset; full `window.location.href='/'` on success
+- [x] `src/App.jsx` — `/verify-progress-reset` route added
+
+### T6.9 — UserSettings.jsx — Reset Progress section
+- [x] Phase selector + confirm step + pendingProgressReset guard; calls initiateProgressReset
+
+**T6 done when:** admin can reset any user's progress (with proof); user can self-service reset (with email verification); all three CFs deployed and functional.
+
 **T5 done when:** all docs committed and live; app stable on Firebase Hosting.

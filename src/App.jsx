@@ -10,6 +10,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import UserSettings from './pages/UserSettings'
 import VerifyEmailChangePage from './pages/VerifyEmailChangePage'
 import VerifyUsernameChangePage from './pages/VerifyUsernameChangePage'
+import VerifyProgressResetPage from './pages/VerifyProgressResetPage'
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
 
           <Route path="/verify-email-change"    element={<VerifyEmailChangePage />} />
           <Route path="/verify-username-change" element={<VerifyUsernameChangePage />} />
+          <Route path="/verify-progress-reset"  element={<VerifyProgressResetPage />} />
 
           <Route path="/" element={
             <ProtectedRoute><LevelMap /></ProtectedRoute>

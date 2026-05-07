@@ -172,9 +172,15 @@ export default function SettingsTab() {
   const [emProof, setEmProof]     = useState(null)
   const [emSuccess, setEmSuccess] = useState(false)
 
+  const [rpUser, setRpUser]       = useState(null)
+  const [rpPhase, setRpPhase]     = useState('')
+  const [rpProof, setRpProof]     = useState(null)
+  const [rpSuccess, setRpSuccess] = useState(false)
+
   const { call: resetPw,  loading: pwLoading  } = useCallable('adminResetPassword')
   const { call: updateUn, loading: unLoading  } = useCallable('adminUpdateUsername')
   const { call: changeEm, loading: emLoading  } = useCallable('initiateEmailChange')
+  const { call: resetRp,  loading: rpLoading  } = useCallable('adminResetProgress')
 
   async function handleResetPassword() {
     if (!pwUser || !pwProof) return
@@ -197,6 +203,14 @@ export default function SettingsTab() {
     try {
       await changeEm({ targetUid: emUser.id, newEmail: emValue.trim(), proofUrl: emProof })
       setEmSuccess(true)
+    } catch (err) { alert('Error: ' + err.message) }
+  }
+
+  async function handleResetProgress() {
+    if (!rpUser || !rpPhase || !rpProof) return
+    try {
+      await resetRp({ targetUid: rpUser.id, resetToPhase: Number(rpPhase), proofUrl: rpProof })
+      setRpSuccess(true)
     } catch (err) { alert('Error: ' + err.message) }
   }
 
@@ -279,6 +293,42 @@ export default function SettingsTab() {
           </>
         )}
         {emSuccess && <p className="text-green-600 font-bold text-sm">Confirmation email sent to user's current email address</p>}
+      </Panel>
+
+      {/* Reset Progress */}
+      <Panel title="Reset Progress">
+        <UserSearch
+          onSelect={u => { setRpUser(u); setRpPhase(''); setRpProof(null); setRpSuccess(false) }}
+          selectedUid={rpUser?.id}
+        />
+        {rpUser && !rpSuccess && (
+          <>
+            <select
+              value={rpPhase}
+              onChange={e => setRpPhase(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl border-2 border-gray-200 focus:border-brand-orange focus:outline-none text-sm"
+            >
+              <option value="">— Select phase to reset to —</option>
+              <option value="1">Phase 1 — reset all levels (1–12)</option>
+              <option value="2">Phase 2 — reset levels 5–12</option>
+              <option value="3">Phase 3 — reset levels 9–12</option>
+            </select>
+            {rpPhase && (
+              <p className="text-xs text-red-600 font-bold">
+                Warning: this permanently removes all stars, XP, and badges for the selected phase and all later phases.
+              </p>
+            )}
+            <ProofUpload action="resetProgress" targetUid={rpUser.id} onUploaded={setRpProof} />
+            <button
+              onClick={handleResetProgress}
+              disabled={rpLoading || !rpPhase || !rpProof}
+              className="w-full py-3 bg-red-500 text-white font-bold rounded-xl disabled:opacity-40 min-h-[44px]"
+            >
+              {rpLoading ? 'Resetting…' : `Reset progress for ${rpUser.username}`}
+            </button>
+          </>
+        )}
+        {rpSuccess && <p className="text-green-600 font-bold text-sm">Progress reset successfully</p>}
       </Panel>
 
     </div>

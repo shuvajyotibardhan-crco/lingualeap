@@ -25,10 +25,14 @@ export default function UserSettings() {
   const [unDone, setUnDone]         = useState(false)
   const [newEmail, setNewEmail]     = useState('')
   const [emDone, setEmDone]         = useState(false)
+  const [rpPhase, setRpPhase]       = useState('')
+  const [rpConfirm, setRpConfirm]   = useState(false)
+  const [rpDone, setRpDone]         = useState(false)
 
   const { call: resetPw,     loading: pwLoading } = useCallable('adminResetPassword')
   const { call: initiateUn,  loading: unLoading } = useCallable('initiateUsernameChange')
   const { call: initiateEm,  loading: emLoading } = useCallable('initiateEmailChange')
+  const { call: initiateRp,  loading: rpLoading } = useCallable('initiateProgressReset')
 
   async function handleResetPassword() {
     try {
@@ -54,6 +58,17 @@ export default function UserSettings() {
     try {
       await initiateEm({ targetUid: user.uid, newEmail })
       setEmDone(true)
+    } catch (err) {
+      alert('Error: ' + err.message)
+    }
+  }
+
+  async function handleInitiateProgressReset() {
+    if (!rpPhase) return
+    try {
+      await initiateRp({ resetToPhase: Number(rpPhase) })
+      setRpDone(true)
+      setRpConfirm(false)
     } catch (err) {
       alert('Error: ' + err.message)
     }
@@ -128,6 +143,52 @@ export default function UserSettings() {
                 {emLoading ? 'Sending…' : 'Send confirmation email'}
               </button>
             </form>
+          )}
+        </Panel>
+        <Panel title="Reset Progress">
+          {rpDone ? (
+            <p className="text-green-700 font-display text-sm">✅ Check your email — we've sent a confirmation link to complete the reset.</p>
+          ) : progress?.pendingProgressReset ? (
+            <p className="text-brand-orange font-display text-sm">⏳ A progress reset is already pending. Check your email for the confirmation link.</p>
+          ) : rpConfirm ? (
+            <div className="space-y-3">
+              <p className="text-red-600 font-display text-sm font-bold">
+                This will permanently clear your stars, XP, and badges for the selected phase and all later phases. This cannot be undone.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={handleInitiateProgressReset}
+                  disabled={rpLoading}
+                  className="flex-1 py-3 bg-red-500 text-white font-display font-bold rounded-xl disabled:opacity-50 min-h-[44px]"
+                >
+                  {rpLoading ? 'Sending…' : 'Yes, send confirmation email'}
+                </button>
+                <button onClick={() => setRpConfirm(false)} className="px-4 py-3 bg-gray-100 text-gray-700 font-display font-bold rounded-xl min-h-[44px]">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-gray-500 font-display text-sm">Reset your learning progress to an earlier phase. A confirmation email will be sent before anything is changed.</p>
+              <select
+                value={rpPhase}
+                onChange={e => setRpPhase(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-brand-orange focus:outline-none font-display text-gray-800"
+              >
+                <option value="">— Select phase to reset to —</option>
+                <option value="1">Phase 1 — reset all levels (1–12)</option>
+                <option value="2">Phase 2 — reset levels 5–12</option>
+                <option value="3">Phase 3 — reset levels 9–12</option>
+              </select>
+              <button
+                onClick={() => rpPhase && setRpConfirm(true)}
+                disabled={!rpPhase}
+                className="w-full py-3 bg-gray-100 text-gray-700 font-display font-bold rounded-xl hover:bg-gray-200 transition-colors disabled:opacity-50 min-h-[44px]"
+              >
+                Reset my progress
+              </button>
+            </div>
           )}
         </Panel>
       </main>
