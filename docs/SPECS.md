@@ -326,13 +326,13 @@ All callable functions are invoked client-side via `httpsCallable(getFunctions(a
 - **Returns:** `{ success: true }`
 
 ### CF-11: `initiateProgressReset`
-- **Type:** callable (self only — `request.auth.uid` must equal `targetUid`)
-- **Input:** `{ targetUid: string, resetToPhase: 1|2|3 }`
+- **Type:** callable (self only — uses `request.auth.uid`; no `targetUid` accepted)
+- **Input:** `{ resetToPhase: 1|2|3 }`
 - **Logic:**
   1. Auth check; validate `resetToPhase`
-  2. Read `users/{targetUid}`; if `pendingProgressReset` exists → throw `failed-precondition`
+  2. `uid = request.auth.uid`; read `users/{uid}`; if `pendingProgressReset` exists → throw `failed-precondition`
   3. `generateToken()` → store `pendingProgressReset: { resetToPhase, token, requestedAt }` in Firestore
-  4. Email link: `{APP_URL}/verify-progress-reset?token={token}&uid={targetUid}`
+  4. Email link: `{APP_URL}/verify-progress-reset?token={token}&uid={uid}`
   5. Send to user's registered email
 - **Returns:** `{ success: true }`
 
