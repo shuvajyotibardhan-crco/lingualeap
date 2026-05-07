@@ -14,8 +14,9 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install firebase-admin
-        run: npm install firebase-admin --no-save
+      - name: Install functions deps
+        working-directory: functions
+        run: npm ci
 
       - name: Write service account
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
@@ -23,4 +24,5 @@ jobs:
       - name: Set admin custom claim
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/sa.json
-        run: node scripts/setAdminClaim.js ${{ secrets.ADMIN_UID }}
+          NODE_PATH: ${{ github.workspace }}/functions/node_modules
+        run: node scripts/setAdminClaim.cjs ${{ secrets.ADMIN_UID }}

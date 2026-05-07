@@ -1,15 +1,13 @@
 // Run once to grant admin custom claim to app_admin@divel.me account.
-// Usage: GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node scripts/setAdminClaim.js <uid>
+// Usage: GOOGLE_APPLICATION_CREDENTIALS=/path/to/sa.json node scripts/setAdminClaim.cjs <uid>
 //
 // Get UID from Firebase Console → Authentication → find app_admin@divel.me → copy UID.
 
-import { createRequire } from 'module'
-const require = createRequire(import.meta.url)
 const admin = require('firebase-admin')
 
 const uid = process.argv[2]
 if (!uid) {
-  console.error('Usage: node scripts/setAdminClaim.js <uid>')
+  console.error('Usage: node scripts/setAdminClaim.cjs <uid>')
   process.exit(1)
 }
 
